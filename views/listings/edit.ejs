@@ -1,0 +1,169 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Room Listing</h4>
+            </div>
+            <div class="card-body">
+                <form action="/listings/<%= listing._id %>?_method=PATCH"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      class="needs-validation"
+                      novalidate>
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="title"
+                               name="listing[title]"
+                               value="<%= listing.title %>"
+                               class="form-control"
+                               placeholder="Enter room title"
+                               required>
+                        <div class="invalid-feedback">
+                            Please provide a title for the listing.
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea id="description"
+                                  name="listing[description]"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Describe the room, amenities, rules, etc."
+                                  required><%= listing.description %></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description.
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price (per month) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number"
+                                   id="price"
+                                   name="listing[price]"
+                                   value="<%= listing.price %>"
+                                   class="form-control"
+                                   placeholder="e.g., 500"
+                                   min="1"
+                                   required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Please provide a valid price.
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="location"
+                               name="listing[location]"
+                               value="<%= listing.location %>"
+                               class="form-control"
+                               placeholder="e.g., Downtown, Near Campus"
+                               required>
+                        <div class="invalid-feedback">
+                            Please provide a location.
+                        </div>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Information <span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="contact"
+                               name="listing[contact]"
+                               value="<%= listing.contact %>"
+                               class="form-control"
+                               placeholder="Phone number or email"
+                               required>
+                        <div class="invalid-feedback">
+                            Please provide contact information.
+                        </div>
+                    </div>
+
+                    <!-- Current Image -->
+                    <% if(listing.image && listing.image.trim() !== '') { %>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Current Image</label>
+                        <div class="current-image-container">
+                            <img src="<%= listing.image %>" 
+                                 alt="Current listing image" 
+                                 class="img-thumbnail current-image"
+                                 onerror="this.style.display='none'">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       name="removeImage" 
+                                       id="removeImage">
+                                <label class="form-check-label text-danger" for="removeImage">
+                                    Remove current image
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Upload New Image -->
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">
+                            <% if(listing.image && listing.image.trim() !== '') { %>
+                            Replace Image
+                            <% } else { %>
+                            Upload Image
+                            <% } %>
+                        </label>
+                        <input type="file"
+                               id="imageFile"
+                               name="imageFile"
+                               class="form-control"
+                               accept="image/*">
+                        <div class="form-text">
+                            Upload a new image (optional). Max size: 5MB. Supported formats: JPG, PNG, GIF.
+                        </div>
+                    </div>
+
+                    <!-- Hidden field for existing image -->
+                    <input type="hidden"
+                           name="listing[image]"
+                           value="<%= listing.image %>">
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Update Listing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <style>
+    .current-image {
+        max-width: 300px;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .current-image-container {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+</style> -->

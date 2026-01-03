@@ -1,0 +1,76 @@
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 mx-auto" style="max-width: 700px;">
+        <h3 class="text-center mb-4">Add New Room Listing</h3>
+
+        <form action="/listings"
+              method="POST"
+              enctype="multipart/form-data"
+              class="needs-validation"
+              novalidate>
+
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="listing[title]" class="form-control" required>
+                <div class="invalid-feedback">Title is required</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="listing[description]" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Price (₹ / month)</label>
+                    <input type="number" name="listing[price]" class="form-control" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="listing[location]" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contact</label>
+                <input type="tel" name="listing[contact]" class="form-control" required>
+            </div>
+
+            <hr>
+
+            <div class="mb-3">
+                <label class="form-label">Upload Image</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*">
+            </div>
+
+            <div class="text-center fw-bold my-2">OR</div>
+
+            <div class="mb-4">
+                <label class="form-label">Image URL</label>
+                <input type="url" name="listing[image]" class="form-control">
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-success btn-lg w-100">
+    Create Listing
+</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(() => {
+  const forms = document.querySelectorAll('.needs-validation')
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>

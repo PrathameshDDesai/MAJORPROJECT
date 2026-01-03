@@ -1,0 +1,49 @@
+<div class="container mt-5">
+    <div class="card shadow-lg mx-auto" style="max-width: 800px;">
+        
+        <!-- Image -->
+        <img src="<%= listing.image %>"
+             class="card-img-top"
+             alt="Room image"
+             style="height: 350px; object-fit: cover;">
+
+        <div class="card-body">
+            <h3 class="card-title"><%= listing.title %></h3>
+
+            <p class="card-text text-muted">
+                <%= listing.description %>
+            </p>
+
+            <ul class="list-group list-group-flush my-3">
+               <li class="list-group-item">
+    <strong>Price:</strong>
+    ₹ <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %> / month
+</li>
+
+                <li class="list-group-item">
+                    <strong>Location:</strong> <%= listing.location %>
+                </li>
+                <li class="list-group-item">
+                    <strong>Contact:</strong> <%= listing.contact %>
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                <!-- EDIT -->
+                <a href="/listings/<%= listing._id %>/edit"
+                   class="btn btn-warning">
+                    Edit
+                </a>
+
+                <!-- DELETE -->
+                <form action="/listings/<%= listing._id %>?_method=DELETE"
+                      method="POST">
+                  <button class="btn btn-danger">
+    Delete
+</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
