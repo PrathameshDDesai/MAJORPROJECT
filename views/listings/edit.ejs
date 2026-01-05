@@ -1,169 +1,191 @@
 <% layout("/layouts/boilerplate") %>
 
-<div class="row mt-3">
-    <div class="col-12">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Room Listing</h4>
-            </div>
-            <div class="card-body">
-                <form action="/listings/<%= listing._id %>?_method=PATCH"
-                      method="POST"
-                      enctype="multipart/form-data"
-                      class="needs-validation"
-                      novalidate>
-
-                    <!-- Title -->
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
-                        <input type="text"
-                               id="title"
-                               name="listing[title]"
-                               value="<%= listing.title %>"
-                               class="form-control"
-                               placeholder="Enter room title"
-                               required>
-                        <div class="invalid-feedback">
-                            Please provide a title for the listing.
+    <div class="row mt-3">
+        <div class="col-12 col-lg-10 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-white bg-opacity-25 me-3">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">Edit Room Listing</h4>
+                            <small class="opacity-75">Update your listing information</small>
                         </div>
                     </div>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/listings/<%= listing._id %>?_method=PATCH" method="POST"
+                        enctype="multipart/form-data" class="needs-validation" novalidate>
 
-                    <!-- Description -->
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-                        <textarea id="description"
-                                  name="listing[description]"
-                                  class="form-control"
-                                  rows="4"
-                                  placeholder="Describe the room, amenities, rules, etc."
-                                  required><%= listing.description %></textarea>
-                        <div class="invalid-feedback">
-                            Please provide a description.
-                        </div>
-                    </div>
+                        <!-- Basic Information Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
 
-                    <!-- Price -->
-                    <div class="mb-3">
-                        <label for="price" class="form-label">Price (per month) <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number"
-                                   id="price"
-                                   name="listing[price]"
-                                   value="<%= listing.price %>"
-                                   class="form-control"
-                                   placeholder="e.g., 500"
-                                   min="1"
-                                   required>
-                        </div>
-                        <div class="invalid-feedback">
-                            Please provide a valid price.
-                        </div>
-                    </div>
-
-                    <!-- Location -->
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                        <input type="text"
-                               id="location"
-                               name="listing[location]"
-                               value="<%= listing.location %>"
-                               class="form-control"
-                               placeholder="e.g., Downtown, Near Campus"
-                               required>
-                        <div class="invalid-feedback">
-                            Please provide a location.
-                        </div>
-                    </div>
-
-                    <!-- Contact -->
-                    <div class="mb-3">
-                        <label for="contact" class="form-label">Contact Information <span class="text-danger">*</span></label>
-                        <input type="text"
-                               id="contact"
-                               name="listing[contact]"
-                               value="<%= listing.contact %>"
-                               class="form-control"
-                               placeholder="Phone number or email"
-                               required>
-                        <div class="invalid-feedback">
-                            Please provide contact information.
-                        </div>
-                    </div>
-
-                    <!-- Current Image -->
-                    <% if(listing.image && listing.image.trim() !== '') { %>
-                    <div class="mb-3">
-                        <label class="form-label d-block">Current Image</label>
-                        <div class="current-image-container">
-                            <img src="<%= listing.image %>" 
-                                 alt="Current listing image" 
-                                 class="img-thumbnail current-image"
-                                 onerror="this.style.display='none'">
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       name="removeImage" 
-                                       id="removeImage">
-                                <label class="form-check-label text-danger" for="removeImage">
-                                    Remove current image
+                            <!-- Title -->
+                            <div class="mb-3">
+                                <label for="title" class="form-label fw-semibold">
+                                    <i class="fas fa-heading me-1 text-muted"></i>
+                                    Title <span class="text-danger">*</span>
                                 </label>
+                                <input type="text" id="title" name="listing[title]" value="<%= listing.title %>"
+                                    class="form-control form-control-lg"
+                                    placeholder="e.g., Cozy Single Room Near Campus" required>
+                                <div class="invalid-feedback">
+                                    Please provide a title for the listing.
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-semibold">
+                                    <i class="fas fa-align-left me-1 text-muted"></i>
+                                    Description <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="description" name="listing[description]" class="form-control" rows="5"
+                                    placeholder="Describe the room, amenities, house rules, nearby facilities..."
+                                    required><%= listing.description %></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Include details about amenities, location benefits, and any special features
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide a description.
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <% } %>
 
-                    <!-- Upload New Image -->
-                    <div class="mb-3">
-                        <label for="imageFile" class="form-label">
-                            <% if(listing.image && listing.image.trim() !== '') { %>
-                            Replace Image
-                            <% } else { %>
-                            Upload Image
-                            <% } %>
-                        </label>
-                        <input type="file"
-                               id="imageFile"
-                               name="imageFile"
-                               class="form-control"
-                               accept="image/*">
-                        <div class="form-text">
-                            Upload a new image (optional). Max size: 5MB. Supported formats: JPG, PNG, GIF.
+                        <!-- Pricing & Location Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary mb-0">
+                                    <i class="fas fa-map-marked-alt me-2"></i>Pricing & Location
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
+
+                            <div class="row">
+                                <!-- Price -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="price" class="form-label fw-semibold">
+                                        <i class="fas fa-rupee-sign me-1 text-muted"></i>
+                                        Monthly Rent <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-rupee-sign text-success"></i>
+                                        </span>
+                                        <input type="number" id="price" name="listing[price]"
+                                            value="<%= listing.price %>" class="form-control" placeholder="5000" min="1"
+                                            required>
+                                        <span class="input-group-text bg-light text-muted">/month</span>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid price.
+                                    </div>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="location" class="form-label fw-semibold">
+                                        <i class="fas fa-map-marker-alt me-1 text-muted"></i>
+                                        Location <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="location" name="listing[location]"
+                                        value="<%= listing.location %>" class="form-control form-control-lg"
+                                        placeholder="e.g., Koregaon Park, Pune" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a location.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact -->
+                            <div class="mb-3">
+                                <label for="contact" class="form-label fw-semibold">
+                                    <i class="fas fa-phone me-1 text-muted"></i>
+                                    Contact Information <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="contact" name="listing[contact]" value="<%= listing.contact %>"
+                                    class="form-control form-control-lg" placeholder="Phone number or email" required>
+                                <div class="form-text">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Your contact info will be visible to interested students
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide contact information.
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Hidden field for existing image -->
-                    <input type="hidden"
-                           name="listing[image]"
-                           value="<%= listing.image %>">
+                        <!-- Image Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-primary mb-0">
+                                    <i class="fas fa-images me-2"></i>Room Image
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
 
-                    <!-- Buttons -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-1"></i> Cancel
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Update Listing
-                        </button>
-                    </div>
-                </form>
+                            <!-- Current Image -->
+                            <% if(listing.image && listing.image.trim() !=='' ) { %>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold d-block">
+                                        <i class="fas fa-image me-1 text-muted"></i>Current Image
+                                    </label>
+                                    <div class="current-image-preview">
+                                        <img src="<%= listing.image %>" alt="Current listing image"
+                                            class="img-thumbnail current-image" onerror="this.style.display='none'">
+                                        <div class="form-check mt-3">
+                                            <input class="form-check-input" type="checkbox" name="removeImage"
+                                                id="removeImage">
+                                            <label class="form-check-label text-danger" for="removeImage">
+                                                <i class="fas fa-trash-alt me-1"></i>
+                                                Remove current image
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <!-- Upload New Image -->
+                                    <div class="mb-3">
+                                        <label for="imageFile" class="form-label fw-semibold">
+                                            <i class="fas fa-upload me-1 text-muted"></i>
+                                            <% if(listing.image && listing.image.trim() !=='' ) { %>
+                                                Replace Image
+                                                <% } else { %>
+                                                    Upload Image
+                                                    <% } %>
+                                        </label>
+                                        <input type="file" id="imageFile" name="imageFile"
+                                            class="form-control form-control-lg" accept="image/*">
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Supported formats: JPG, PNG, GIF. Max size: 5MB
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden field for existing image -->
+                                    <input type="hidden" name="listing[image]" value="<%= listing.image %>">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex flex-column flex-md-row gap-3 mt-5 pt-3 border-top">
+                            <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary btn-lg flex-fill">
+                                <i class="fas fa-times me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="fas fa-save me-2"></i> Update Listing
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- <style>
-    .current-image {
-        max-width: 300px;
-        max-height: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-    
-    .current-image-container {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-</style> -->

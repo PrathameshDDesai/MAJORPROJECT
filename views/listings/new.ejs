@@ -1,76 +1,196 @@
-<div class="container mt-5">
-    <div class="card shadow-lg p-4 mx-auto" style="max-width: 700px;">
-        <h3 class="text-center mb-4">Add New Room Listing</h3>
+<% layout("/layouts/boilerplate") %>
 
-        <form action="/listings"
-              method="POST"
-              enctype="multipart/form-data"
-              class="needs-validation"
-              novalidate>
-
-            <div class="mb-3">
-                <label class="form-label">Title</label>
-                <input type="text" name="listing[title]" class="form-control" required>
-                <div class="invalid-feedback">Title is required</div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea name="listing[description]" class="form-control" rows="3" required></textarea>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Price (₹ / month)</label>
-                    <input type="number" name="listing[price]" class="form-control" required>
+    <div class="row mt-3">
+        <div class="col-12 col-lg-10 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-success text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-white bg-opacity-25 me-3">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">Add New Room Listing</h4>
+                            <small class="opacity-75">Share your room with students</small>
+                        </div>
+                    </div>
                 </div>
+                <div class="card-body p-4">
+                    <form action="/listings" method="POST" enctype="multipart/form-data" class="needs-validation"
+                        novalidate>
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Location</label>
-                    <input type="text" name="listing[location]" class="form-control" required>
+                        <!-- Basic Information Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-success mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
+
+                            <!-- Title -->
+                            <div class="mb-3">
+                                <label for="title" class="form-label fw-semibold">
+                                    <i class="fas fa-heading me-1 text-muted"></i>
+                                    Title <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="title" name="listing[title]" class="form-control form-control-lg"
+                                    placeholder="e.g., Cozy Single Room Near Campus" required>
+                                <div class="invalid-feedback">
+                                    Please provide a title for the listing.
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-semibold">
+                                    <i class="fas fa-align-left me-1 text-muted"></i>
+                                    Description <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="description" name="listing[description]" class="form-control" rows="5"
+                                    placeholder="Describe the room, amenities, house rules, nearby facilities..."
+                                    required></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Include details about amenities, location benefits, and any special features
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide a description.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing & Location Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-success mb-0">
+                                    <i class="fas fa-map-marked-alt me-2"></i>Pricing & Location
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
+
+                            <div class="row">
+                                <!-- Price -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="price" class="form-label fw-semibold">
+                                        <i class="fas fa-rupee-sign me-1 text-muted"></i>
+                                        Monthly Rent <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-rupee-sign text-success"></i>
+                                        </span>
+                                        <input type="number" id="price" name="listing[price]" class="form-control"
+                                            placeholder="5000" min="1" required>
+                                        <span class="input-group-text bg-light text-muted">/month</span>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid price.
+                                    </div>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="location" class="form-label fw-semibold">
+                                        <i class="fas fa-map-marker-alt me-1 text-muted"></i>
+                                        Location <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="location" name="listing[location]"
+                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park, Pune"
+                                        required>
+                                    <div class="invalid-feedback">
+                                        Please provide a location.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact -->
+                            <div class="mb-3">
+                                <label for="contact" class="form-label fw-semibold">
+                                    <i class="fas fa-phone me-1 text-muted"></i>
+                                    Contact Information <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="contact" name="listing[contact]"
+                                    class="form-control form-control-lg" placeholder="Phone number or email" required>
+                                <div class="form-text">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Your contact info will be visible to interested students
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide contact information.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Section -->
+                        <div class="form-section mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="text-success mb-0">
+                                    <i class="fas fa-images me-2"></i>Room Image
+                                </h5>
+                                <hr class="mt-2">
+                            </div>
+
+                            <!-- Upload Image -->
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label fw-semibold">
+                                    <i class="fas fa-upload me-1 text-muted"></i>
+                                    Upload Image
+                                </label>
+                                <input type="file" id="imageFile" name="imageFile" class="form-control form-control-lg"
+                                    accept="image/*">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Supported formats: JPG, PNG, GIF. Max size: 5MB
+                                </div>
+                            </div>
+
+                            <div class="text-center my-3">
+                                <span class="badge bg-secondary px-3 py-2">
+                                    <i class="fas fa-arrows-alt-h me-1"></i> OR
+                                </span>
+                            </div>
+
+                            <!-- Image URL -->
+                            <div class="mb-3">
+                                <label for="imageUrl" class="form-label fw-semibold">
+                                    <i class="fas fa-link me-1 text-muted"></i>
+                                    Image URL
+                                </label>
+                                <input type="url" id="imageUrl" name="listing[image]"
+                                    class="form-control form-control-lg" placeholder="https://example.com/image.jpg">
+                                <div class="form-text">
+                                    <i class="fas fa-globe me-1"></i>
+                                    Provide an image URL as an alternative to uploading
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex flex-column flex-md-row gap-3 mt-5 pt-3 border-top">
+                            <a href="/listings" class="btn btn-outline-secondary btn-lg flex-fill">
+                                <i class="fas fa-times me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg flex-fill">
+                                <i class="fas fa-check me-2"></i> Create Listing
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Contact</label>
-                <input type="tel" name="listing[contact]" class="form-control" required>
-            </div>
-
-            <hr>
-
-            <div class="mb-3">
-                <label class="form-label">Upload Image</label>
-                <input type="file" name="imageFile" class="form-control" accept="image/*">
-            </div>
-
-            <div class="text-center fw-bold my-2">OR</div>
-
-            <div class="mb-4">
-                <label class="form-label">Image URL</label>
-                <input type="url" name="listing[image]" class="form-control">
-            </div>
-
-            <div class="d-grid">
-                <button class="btn btn-success btn-lg w-100">
-    Create Listing
-</button>
-
-            </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<script>
-(() => {
-  const forms = document.querySelectorAll('.needs-validation')
-  Array.from(forms).forEach(form => {
-    form.addEventListener('submit', event => {
-      if (!form.checkValidity()) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-      form.classList.add('was-validated')
-    }, false)
-  })
-})()
-</script>
+    <script>
+        (() => {
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
