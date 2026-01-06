@@ -40,7 +40,7 @@ app.get("/", (req, res) => {
 });
 
 /* ---------- INDEX ---------- */
-app.get("/listings", async (req, res) => {
+app.get("/listings", wrapAsync(async (req, res) => {
     try {
         const allListings = await Listing.find({});
         res.render("listings/index", { allListings });
@@ -48,7 +48,8 @@ app.get("/listings", async (req, res) => {
         console.error(err);
         res.status(500).send("Failed to load listings");
     }
-});
+})
+);
 
 /* ---------- NEW FORM ---------- */
 app.get("/listings/new", (req, res) => {
@@ -74,7 +75,7 @@ app.post("/listings", upload.single("imageFile"), wrapAsync(async (req, res, nex
 );
 
 /* ---------- SHOW ---------- */
-app.get("/listings/:id", async (req, res) => {
+app.get("/listings/:id", wrapAsync(async (req, res) => {
     try {
         const listing = await Listing.findById(req.params.id);
         if (!listing) return res.status(404).send("Listing not found");
@@ -84,10 +85,11 @@ app.get("/listings/:id", async (req, res) => {
         console.error(err);
         res.status(500).send("Error loading listing");
     }
-});
+})
+);
 
 /* ---------- EDIT FORM ---------- */
-app.get("/listings/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
     try {
         const listing = await Listing.findById(req.params.id);
         if (!listing) return res.status(404).send("Listing not found");
@@ -97,7 +99,7 @@ app.get("/listings/:id/edit", async (req, res) => {
         console.error(err);
         res.status(500).send("Error loading edit page");
     }
-});
+}));
 
 /* ---------- UPDATE ---------- */
 app.patch("/listings/:id", upload.single("imageFile"), async (req, res) => {
@@ -140,11 +142,11 @@ app.listen(8080, () => {
 
 // 404 handler
 app.use((req, res, next) => {
-    next(new ExpressError(404, "Page not found"));
+    next(new ExpressError("Page not found", 404));
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
     const { statusCode = 500, message = "Something went wrong" } = err;
-    res.status(statusCode).send(message);
+    res.status(statusCode).render("listings/error", { message });
 });
