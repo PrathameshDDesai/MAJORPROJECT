@@ -1,25 +1,30 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+/* ================= REVIEW SCHEMA ================= */
+// Defines the structure for room reviews in the database
 const reviewSchema = new Schema(
     {
         rating: {
             type: Number,
-            required: true,
-            min: 1,
-            max: 5
+            required: [true, "Rating is required"], // Ensure a rating exists
+            min: 1, // Minimum 1 star
+            max: 5  // Maximum 5 stars
         },
         comment: {
             type: String,
-            required: true,
+            required: [true, "Comment cannot be empty"], // Ensure text is provided
             trim: true
         },
         author: {
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User" // Reference to User model (if authentication is implemented)
         }
     },
-    { timestamps: true }
+    {
+        timestamps: true // Automatically track when reviews are created/updated
+    }
 );
 
+// Compile and export the Review model
 module.exports = mongoose.model("Review", reviewSchema);

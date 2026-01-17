@@ -7,26 +7,31 @@ const Review = require("../models/review");
 const upload = require("../middleware/upload");
 const ExpressError = require("../utils/ExpressError");
 
-
-
-/* ---------- REVIEWS: CREATE ---------- */
+/**
+ * @route   POST /listings/:id/reviews
+ * @desc    CREATE: Add a new review to a listing
+ */
 router.post("/", wrapAsync(async (req, res) => {
     const listing = await Listing.findById(req.params.id);
-
-    // TODO: Replace with actual user ID from session when auth is implemented
-    // For now, reviews will be created without an author until authentication is implemented
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listings");
+    }
 
     const newReview = new Review(req.body.review);
-
     listing.reviews.push(newReview);
 
     await newReview.save();
     await listing.save();
 
+    req.flash("success", "Review submitted!");
     res.redirect(`/listings/${listing._id}`);
 }));
 
-/* ---------- REVIEWS: UPDATE ---------- */
+/**
+ * @route   PATCH /listings/:id/reviews/:reviewId
+ * @desc    UPDATE: Edit an existing review
+ */
 router.patch("/:reviewId", wrapAsync(async (req, res) => {
     const { rating, comment } = req.body.review;
 
@@ -35,22 +40,27 @@ router.patch("/:reviewId", wrapAsync(async (req, res) => {
         comment
     });
 
+    req.flash("success", "Review updated!");
     res.redirect(`/listings/${req.params.id}`);
 }));
 
-/* ---------- REVIEWS: DELETE ---------- */
+/**
+ * @route   DELETE /listings/:id/reviews/:reviewId
+ * @desc    DELETE: Remove a review and update the listing's reference
+ */
 router.delete("/:reviewId", wrapAsync(async (req, res) => {
-    // Remove review from listing's reviews array
-    await Listing.findByIdAndUpdate(req.params.id, {
-        $pull: { reviews: req.params.reviewId }
+    const { id, reviewId } = req.params;
+
+    // Remove the review's ID from the listing the reviews array
+    await Listing.findByIdAndUpdate(id, {
+        $pull: { reviews: reviewId }
     });
 
-    // Delete the review document
-    await Review.findByIdAndDelete(req.params.reviewId);
+    // Delete the actual review document
+    await Review.findByIdAndDelete(reviewId);
 
-    res.redirect(`/listings/${req.params.id}`);
+    req.flash("success", "Review deleted!");
+    res.redirect(`/listings/${id}`);
 }));
 
-
-// export modules
 module.exports = router;

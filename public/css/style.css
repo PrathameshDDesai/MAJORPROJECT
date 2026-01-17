@@ -38,6 +38,14 @@ body {
     background-color: var(--bg-page);
     color: var(--text-main);
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    /* Pushes footer to bottom */
 }
 
 a {
@@ -51,6 +59,7 @@ a {
     background-color: var(--primary) !important;
     padding: 0.75rem 0;
     box-shadow: var(--shadow);
+    z-index: 1050;
 }
 
 .navbar-brand {
@@ -74,40 +83,63 @@ a {
 
 /* ===== CARDS & LISTINGS ===== */
 
-.card {
+.listing-card {
+    height: 100%;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background-color: var(--bg-surface);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
 }
 
 .listing-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-md);
     border-color: var(--action);
 }
 
 .card-img-top-container {
-    height: 220px;
+    height: 200px;
+    /* Consistent height */
+    width: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 .card-img-top {
+    width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s ease;
 }
 
 .listing-card:hover .card-img-top {
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-title {
     color: var(--primary);
     font-weight: 700;
     margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+/* ===== FLASH ALERTS ===== */
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
 }
 
 /* ===== BUTTONS ===== */
@@ -145,6 +177,7 @@ a {
 .btn-danger {
     background-color: #ef4444;
     border: none;
+    color: white;
 }
 
 .btn-warning {
@@ -158,21 +191,20 @@ a {
 .show-page-card {
     border: none;
     box-shadow: var(--shadow-md) !important;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 .show-page-image {
-    height: 400px;
+    height: 450px;
     object-fit: cover;
+    width: 100%;
 }
 
 .show-page-list .list-group-item {
     border-color: var(--border);
-    padding: 1rem 0;
+    padding: 1.25rem 0;
     background-color: transparent;
-}
-
-.text-success {
-    color: #10b981 !important;
 }
 
 /* ===== REVIEWS SECTION ===== */
@@ -181,54 +213,21 @@ a {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
-    align-items: start;
 }
 
 .review-card {
     border: 1px solid var(--border);
     border-left: 4px solid var(--action);
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--white);
+    padding: 1.25rem;
     transition: all 0.2s ease;
 }
 
 .review-card:hover {
     border-color: var(--action);
+    box-shadow: var(--shadow);
     background-color: #f8fafc;
-}
-
-.review-form-card .card-header {
-    background-color: var(--primary-light);
-    color: var(--white);
-    border: none;
-    padding: 1rem 1.5rem;
-}
-
-/* Rating Stars */
-.fa-star {
-    color: #fbbf24;
-}
-
-/* ===== FORMS ===== */
-
-.form-label {
-    font-weight: 600;
-    color: var(--primary-light);
-}
-
-.form-control,
-.form-select {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--action);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    outline: none;
 }
 
 /* ===== FOOTER ===== */
@@ -236,17 +235,20 @@ a {
 .footer {
     background-color: var(--primary);
     color: #94a3b8;
-    padding: 4rem 0 2rem;
-    margin-top: 5rem;
+    padding: 3rem 0 1.5rem;
+    margin-top: auto;
+    /* Required for sticky footer with flexbox */
 }
 
 .footer-title,
 .footer-heading {
     color: var(--white);
+    font-weight: 700;
 }
 
 .footer-link {
     color: #94a3b8;
+    transition: color 0.2s;
 }
 
 .footer-link:hover {
@@ -254,19 +256,54 @@ a {
 }
 
 .footer-copyright {
-    margin-top: 3rem;
-    padding-top: 2rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.875rem;
+}
+
+/* ===== UTILITIES & GRADIENTS ===== */
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%) !important;
+}
+
+.text-primary {
+    color: #3b82f6 !important;
+}
+
+.text-success {
+    color: #3b82f6 !important;
+}
+
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
 }
 
 /* ===== RESPONSIVE ===== */
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .reviews-grid {
         grid-template-columns: 1fr;
     }
+}
 
+@media (max-width: 768px) {
     .show-page-image {
-        height: 250px;
+        height: 300px;
+    }
+
+    .footer {
+        text-align: center;
     }
 }
