@@ -3,10 +3,12 @@ const ejsMate = require('ejs-mate');
 const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
-const wrapAsync = require("./utils/wrapAsync");
+const Review = require("./models/review");
 const Listing = require("./models/listing");
-const upload = require("./middleware/upload");
+const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
+const reviews = require("./routes/review.js");
+const listings = require("./routes/listing.js");
 const app = express();
 
 /* ================= DATABASE ================= */
@@ -34,104 +36,14 @@ app.use((req, res, next) => {
 
 /* ================= ROUTES ================= */
 
-// HOME → listings
 app.get("/", (req, res) => {
     res.redirect("/listings");
 });
 
-/* ---------- INDEX ---------- */
-app.get("/listings", wrapAsync(async (req, res) => {
-    try {
-        const allListings = await Listing.find({});
-        res.render("listings/index", { allListings });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Failed to load listings");
-    }
-})
-);
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
 
-/* ---------- NEW FORM ---------- */
-app.get("/listings/new", (req, res) => {
-    res.render("listings/new");
-});
 
-/* ---------- CREATE ---------- */
-app.post("/listings", upload.single("imageFile"), wrapAsync(async (req, res, next) => {
-
-    const listingData = req.body.listing;
-
-    // IMAGE LOGIC (NO DELAY, NO BREAK)
-    if (req.file) {
-        listingData.image = `/uploads/${req.file.filename}`;
-    } else if (!listingData.image) {
-        listingData.image = "/images/default.jpg";
-    }
-
-    await Listing.create(listingData);
-    res.redirect("/listings");
-
-})
-);
-
-/* ---------- SHOW ---------- */
-app.get("/listings/:id", wrapAsync(async (req, res) => {
-    try {
-        const listing = await Listing.findById(req.params.id);
-        if (!listing) return res.status(404).send("Listing not found");
-
-        res.render("listings/show", { listing });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error loading listing");
-    }
-})
-);
-
-/* ---------- EDIT FORM ---------- */
-app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
-    try {
-        const listing = await Listing.findById(req.params.id);
-        if (!listing) return res.status(404).send("Listing not found");
-
-        res.render("listings/edit", { listing });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error loading edit page");
-    }
-}));
-
-/* ---------- UPDATE ---------- */
-app.patch("/listings/:id", upload.single("imageFile"), async (req, res) => {
-    try {
-        const listingData = req.body.listing;
-
-        if (req.file) {
-            listingData.image = `/uploads/${req.file.filename}`;
-        }
-
-        await Listing.findByIdAndUpdate(req.params.id, listingData, {
-            runValidators: true,
-            new: true
-        });
-
-        res.redirect(`/listings/${req.params.id}`);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Failed to update listing");
-    }
-});
-
-/* ---------- DELETE ---------- */
-app.delete("/listings/:id", async (req, res) => {
-    try {
-        await Listing.findByIdAndDelete(req.params.id);
-        res.redirect("/listings");
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Failed to delete listing");
-    }
-});
 
 /* ================= SERVER ================= */
 app.listen(8080, () => {
