@@ -43,10 +43,20 @@
                     <div class="col">
                         <a href="/listings/<%= listing._id %>" class="text-decoration-none card-link">
                             <div class="card h-100 shadow-sm border listing-card">
-                                <div class="card-img-top-container">
-                                    <img src="<%= listing.image || '/images/default-room.jpg' %>" class="card-img-top"
-                                        alt="<%= listing.title %>"
+                                <div class="card-img-top-container position-relative">
+                                    <img src="<%= (listing.images && listing.images.length > 0) ? listing.images[0] : '/images/default.jpeg' %>"
+                                        class="card-img-top" alt="<%= listing.title %>"
                                         onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+
+                                    <!-- Image Count Badge -->
+                                    <% if(listing.images && listing.images.length> 1) { %>
+                                        <div class="position-absolute top-0 end-0 m-2">
+                                            <span class="badge bg-dark bg-opacity-75 shadow-sm">
+                                                <i class="fas fa-images me-1 text-white"></i>
+                                                <%= listing.images.length %>
+                                            </span>
+                                        </div>
+                                        <% } %>
                                 </div>
 
                                 <div class="card-body d-flex flex-column">

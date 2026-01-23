@@ -1,0 +1,210 @@
+/* ==================== LOGIN PAGE STYLES - Premium Version ==================== */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+body {
+    background: #f0f2f5;
+    background-image:
+        radial-gradient(at 0% 0%, hsla(168, 39%, 10%, 1) 0, transparent 50%),
+        radial-gradient(at 50% 0%, hsla(150, 39%, 30%, 1) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(140, 49%, 30%, 1) 0, transparent 50%);
+    background-attachment: fixed;
+}
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.login-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== HEADER ==================== */
+
+.login-header {
+    background: var(--primary-gradient);
+    color: white;
+    text-align: center;
+    padding: 3.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.8rem;
+}
+
+.login-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.login-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+/* ==================== FORM ==================== */
+
+.login-form {
+    padding: 3rem 2.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-group label i {
+    color: #11998e;
+    margin-right: 0.5rem;
+    width: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f7fafc;
+    color: #2d3748;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #11998e;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(17, 153, 142, 0.15);
+    transform: translateY(-1px);
+}
+
+/* ==================== PASSWORD INPUT ==================== */
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    padding: 0 1.25rem;
+    background: none;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #11998e;
+}
+
+/* ==================== SUBMIT BUTTON ==================== */
+
+.btn-submit {
+    width: 100%;
+    padding: 1.125rem;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(17, 153, 142, 0.25);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(17, 153, 142, 0.3);
+    filter: brightness(1.1);
+}
+
+/* ==================== FOOTER ==================== */
+
+.form-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.link-primary {
+    color: #11998e;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+.link-primary:hover {
+    text-decoration: underline;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 576px) {
+    .login-card {
+        border-radius: 0;
+    }
+
+    .login-form {
+        padding: 2.5rem 1.5rem;
+    }
+}

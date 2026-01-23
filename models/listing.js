@@ -31,10 +31,12 @@ const listingSchema = new Schema(
             required: [true, "Contact information is mandatory"],
             trim: true
         },
-        image: {
-            type: String,
-            default: "/images/default.jpeg" // Fallback if no image is provided
-        },
+        images: [
+            {
+                type: String,
+                default: "/images/default.jpeg"
+            }
+        ],
         reviews: [
             {
                 type: Schema.Types.ObjectId,

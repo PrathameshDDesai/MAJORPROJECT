@@ -127,53 +127,169 @@
                         <div class="form-section mb-4">
                             <div class="section-header mb-3">
                                 <h5 class="text-primary mb-0">
-                                    <i class="fas fa-images me-2"></i>Room Image
+                                    <i class="fas fa-images me-2"></i>Manage Room Images
                                 </h5>
                                 <hr class="mt-2">
                             </div>
 
-                            <!-- Current Image -->
-                            <% if(listing.image && listing.image.trim() !=='' ) { %>
+                            <!-- Current Images Management -->
+                            <% if(listing.images && listing.images.length> 0) { %>
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold d-block">
-                                        <i class="fas fa-image me-1 text-muted"></i>Current Image
+                                    <label class="form-label fw-semibold d-block mb-3">
+                                        <i class="fas fa-th me-1 text-muted"></i>Current Images (Check to Delete)
                                     </label>
-                                    <div class="current-image-preview">
-                                        <img src="<%= listing.image %>" alt="Current listing image"
-                                            class="img-thumbnail current-image" onerror="this.style.display='none'">
-                                        <div class="form-check mt-3">
-                                            <input class="form-check-input" type="checkbox" name="removeImage"
-                                                id="removeImage">
-                                            <label class="form-check-label text-danger" for="removeImage">
-                                                <i class="fas fa-trash-alt me-1"></i>
-                                                Remove current image
-                                            </label>
-                                        </div>
+                                    <div class="row row-cols-2 row-cols-md-4 g-3">
+                                        <% listing.images.forEach((img, idx)=> { %>
+                                            <div class="col">
+                                                <div class="card h-100 shadow-sm border-0 bg-light">
+                                                    <div class="position-relative">
+                                                        <img src="<%= img %>" class="card-img-top rounded-top"
+                                                            alt="Room" style="height: 120px; object-fit: cover;">
+                                                        <div class="position-absolute top-0 end-0 p-2">
+                                                            <div class="form-check m-0">
+                                                                <input
+                                                                    class="form-check-input bg-danger border-danger shadow-none"
+                                                                    type="checkbox" name="deleteImages"
+                                                                    value="<%= img %>" id="img-<%= idx %>"
+                                                                    style="width: 1.5em; height: 1.5em;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer p-2 text-center bg-transparent border-0">
+                                                        <label class="form-check-label text-danger fw-bold small"
+                                                            for="img-<%= idx %>">
+                                                            <i class="fas fa-trash-alt me-1"></i>Delete
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
                                     </div>
                                 </div>
                                 <% } %>
 
-                                    <!-- Upload New Image -->
-                                    <div class="mb-3">
-                                        <label for="imageFile" class="form-label fw-semibold">
-                                            <i class="fas fa-upload me-1 text-muted"></i>
-                                            <% if(listing.image && listing.image.trim() !=='' ) { %>
-                                                Replace Image
-                                                <% } else { %>
-                                                    Upload Image
-                                                    <% } %>
+                                    <!-- Add New Images via Local Storage -->
+                                    <div class="mb-4" id="file-inputs-container">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-desktop me-1 text-muted"></i>
+                                            Add New Images (Upload)
                                         </label>
-                                        <input type="file" id="imageFile" name="imageFile"
-                                            class="form-control form-control-lg" accept="image/*">
-                                        <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Supported formats: JPG, PNG, GIF. Max size: 5MB
+                                        <div class="input-group mb-2 file-input-group">
+                                            <input type="file" name="imageFiles" class="form-control" accept="image/*">
+                                            <button type="button" class="btn btn-outline-primary add-file-field">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <!-- Hidden field for existing image -->
-                                    <input type="hidden" name="listing[image]" value="<%= listing.image %>">
+                                    <!-- Image Preview Area for New Uploads -->
+                                    <div id="image-preview-container" class="row row-cols-4 g-2 mb-3"></div>
+
+                                    <script>
+                                        // Dynamic File fields
+                                        document.querySelector('.add-file-field').addEventListener('click', function () {
+                                            const container = document.getElementById('file-inputs-container');
+                                            const currentFields = container.querySelectorAll('.file-input-group').length;
+                                            const currentImages = document.querySelectorAll('.card-img-top').length;
+
+                                            if (currentFields + currentImages < 10) {
+                                                const div = document.createElement('div');
+                                                div.className = 'input-group mb-2 file-input-group';
+                                                div.innerHTML = `
+                                                    <input type="file" name="imageFiles" class="form-control" accept="image/*">
+                                                    <button type="button" class="btn btn-outline-danger remove-file-field">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                `;
+                                                container.appendChild(div);
+
+                                                div.querySelector('.remove-file-field').addEventListener('click', function () {
+                                                    div.remove();
+                                                    updatePreviews();
+                                                });
+                                                div.querySelector('input').addEventListener('change', updatePreviews);
+                                            } else {
+                                                alert("Maximum 10 total images allowed");
+                                            }
+                                        });
+
+                                        // Preview logic
+                                        function updatePreviews() {
+                                            const previewContainer = document.getElementById('image-preview-container');
+                                            previewContainer.innerHTML = '';
+                                            const files = document.querySelectorAll('input[name="imageFiles"]');
+
+                                            files.forEach(input => {
+                                                if (input.files && input.files[0]) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = function (e) {
+                                                        const col = document.createElement('div');
+                                                        col.className = 'col';
+                                                        col.innerHTML = `
+                                                            <div class="card h-100 shadow-sm border-0">
+                                                                <img src="${e.target.result}" class="card-img-top rounded shadow-sm" style="height: 80px; object-fit: cover;">
+                                                                <div class="card-footer p-1 text-center bg-light border-0">
+                                                                    <small class="text-primary fw-bold" style="font-size: 0.7rem;">New</small>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                        previewContainer.appendChild(col);
+                                                    };
+                                                    reader.readAsDataURL(input.files[0]);
+                                                }
+                                            });
+                                        }
+                                        document.querySelector('input[name="imageFiles"]').addEventListener('change', updatePreviews);
+                                    </script>
+
+                                    <div class="text-center my-3">
+                                        <span class="badge bg-secondary px-3 py-2">
+                                            <i class="fas fa-arrows-alt-h me-1"></i> OR
+                                        </span>
+                                    </div>
+
+                                    <!-- Add New Images via URL -->
+                                    <div class="mb-3" id="url-inputs-container">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-link me-1 text-muted"></i>
+                                            Add Image URLs
+                                        </label>
+                                        <div class="input-group mb-2 url-input-group">
+                                            <input type="url" name="imageUrls" class="form-control"
+                                                placeholder="https://example.com/image.jpg">
+                                            <button type="button" class="btn btn-outline-primary add-url-field">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                         </div>
+
+                        <script>
+                            // Handle Dynamic URL fields
+                            document.querySelector('.add-url-field').addEventListener('click', function () {
+                                const container = document.getElementById('url-inputs-container');
+                                const currentFields = container.querySelectorAll('.url-input-group').length;
+                                const currentImages = document.querySelectorAll('.card-img-top').length; // Images already there
+
+                                if (currentFields + currentImages < 10) {
+                                    const div = document.createElement('div');
+                                    div.className = 'input-group mb-2 url-input-group';
+                                    div.innerHTML = `
+                                        <input type="url" name="imageUrls" class="form-control" placeholder="https://example.com/another-image.jpg">
+                                        <button type="button" class="btn btn-outline-danger remove-url-field">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    `;
+                                    container.appendChild(div);
+
+                                    div.querySelector('.remove-url-field').addEventListener('click', function () {
+                                        div.remove();
+                                    });
+                                } else {
+                                    alert("Maximum images reached");
+                                }
+                            });
+                        </script>
 
                         <!-- Action Buttons -->
                         <div class="d-flex flex-column flex-md-row gap-3 mt-5 pt-3 border-top">

@@ -1,31 +1,92 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
         <a class="navbar-brand fw-bold" href="/">
-            <i class="fas fa-home me-2"></i>UniRooms
+            <i class="fas fa-home me-2 text-primary"></i>UniRooms
         </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">
-                        <i class="fas fa-home me-1"></i>Home
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item me-3">
+                    <a class="nav-link <%= (locals.currentPath === '/listings') ? 'active' : '' %>" href="/listings">
+                        <i class="fas fa-compass me-1"></i>Explore
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listings">
-                        <i class="fas fa-list me-1"></i>Listings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listings/new">
+
+                <li class="nav-item me-3">
+                    <a class="nav-link <%= (locals.currentPath === '/listings/new') ? 'active' : '' %>"
+                        href="/listings/new">
                         <i class="fas fa-plus-circle me-1"></i>Add Listing
                     </a>
                 </li>
+
+                <% if(!locals.currUser) { %>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="/signup">
+                            Sign Up
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-sm px-3 ms-2 rounded-pill shadow-sm" href="/login">
+                            Log In
+                        </a>
+                    </li>
+                    <% } else { %>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle fa-lg me-1"></i>
+                                <span class="d-none d-lg-inline">
+                                    <%= locals.currUser.username %>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"
+                                aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/logout"><i
+                                            class="fas fa-sign-out-alt me-2 text-danger"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                        <% } %>
             </ul>
         </div>
     </div>
 </nav>
+
+<style>
+    .navbar {
+        background: rgba(33, 37, 41, 0.95) !important;
+        backdrop-filter: blur(10px);
+        padding: 0.8rem 0;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        z-index: 1050;
+    }
+
+    .nav-link {
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: #0d6efd !important;
+    }
+
+    .nav-link.active {
+        color: #0d6efd !important;
+    }
+
+    .dropdown-menu {
+        border-radius: 0.75rem;
+    }
+
+    .dropdown-item {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-item:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>

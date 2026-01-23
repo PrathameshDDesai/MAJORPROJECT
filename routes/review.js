@@ -7,6 +7,8 @@ const Review = require("../models/review");
 const upload = require("../middleware/upload");
 const ExpressError = require("../utils/ExpressError");
 
+const { } = require("../middleware.js");
+
 /**
  * @route   POST /listings/:id/reviews
  * @desc    CREATE: Add a new review to a listing
