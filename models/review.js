@@ -15,6 +15,10 @@ const reviewSchema = new Schema(
             type: String,
             required: [true, "Comment cannot be empty"], // Ensure text is provided
             trim: true
+        },
+        author: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
         }
     },
     {

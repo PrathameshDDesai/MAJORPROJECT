@@ -97,10 +97,44 @@
                                         Location <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" id="location" name="listing[location]"
-                                        value="<%= listing.location %>" class="form-control form-control-lg"
-                                        placeholder="e.g., Koregaon Park, Pune" required>
+                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park"
+                                        value="<%= listing.location %>" required>
                                     <div class="invalid-feedback">
                                         Please provide a location.
+                                    </div>
+                                </div>
+
+                                <!-- City -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label fw-semibold">
+                                        <i class="fas fa-city me-1 text-muted"></i>
+                                        City <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="city" name="listing[city]"
+                                        class="form-control form-control-lg" placeholder="e.g., Pune"
+                                        value="<%= listing.city || '' %>" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a city.
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label fw-semibold">
+                                        <i class="fas fa-venus-mars me-1 text-muted"></i>
+                                        Gender Preference <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="gender" name="listing[gender]" class="form-select form-select-lg"
+                                        required>
+                                        <option value="Boys" <%=listing.gender==='Boys' ? 'selected' : '' %>>Boys
+                                        </option>
+                                        <option value="Girls" <%=listing.gender==='Girls' ? 'selected' : '' %>>Girls
+                                        </option>
+                                        <option value="Any" <%=listing.gender==='Any' || !listing.gender ? 'selected'
+                                            : '' %>>Any</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a gender preference.
                                     </div>
                                 </div>
                             </div>

@@ -21,7 +21,7 @@
         <% } else { %>
 
             <div class="row mb-4">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-2 mb-md-0">
                     <div class="input-group">
                         <span class="input-group-text bg-light">
                             <i class="fas fa-search"></i>
@@ -30,22 +30,44 @@
                             placeholder="Search rooms...">
                     </div>
                 </div>
-                <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select id="cityFilter" class="form-select border-light">
+                        <option value="">All Cities</option>
+                        <% const cities=[...new Set(allListings.map(l=> l.city).filter(c => c))];
+                            cities.sort().forEach(city => { %>
+                            <option value="<%= city %>">
+                                <%= city %>
+                            </option>
+                            <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2 mb-md-0">
+                    <select id="genderFilter" class="form-select border-light">
+                        <option value="">All Genders</option>
+                        <option value="Boys">Boys</option>
+                        <option value="Girls">Girls</option>
+                        <option value="Any">Any</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-md-end">
                     <span class="badge bg-secondary fs-6">
                         <i class="fas fa-bed me-1"></i>
-                        <%= allListings.length %> Room<%= allListings.length !==1 ? 's' : '' %> Available
+                        <span id="listingCount">
+                            <%= allListings.length %>
+                        </span> Room<%= allListings.length !==1 ? 's' : '' %> Available
                     </span>
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <% allListings.forEach(listing=> { %>
-                    <div class="col">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listingsContainer">
+                <% allListings.forEach((listing, index)=> { %>
+                    <div class="col listing-item" style="animation-delay: <%= index * 0.1 %>s;">
                         <a href="/listings/<%= listing._id %>" class="text-decoration-none card-link">
-                            <div class="card h-100 shadow-sm border listing-card">
+                            <div class="card h-100 shadow-sm border listing-card" data-city="<%= listing.city || '' %>"
+                                data-gender="<%= listing.gender || 'Any' %>">
                                 <div class="card-img-top-container position-relative">
                                     <img src="<%= (listing.images && listing.images.length > 0) ? listing.images[0] : '/images/default.jpeg' %>"
-                                        class="card-img-top" alt="<%= listing.title %>"
+                                        class="card-img-top" alt="<%= listing.title %>" loading="lazy"
                                         onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
 
                                     <!-- Image Count Badge -->

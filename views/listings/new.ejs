@@ -70,7 +70,7 @@
 
                             <div class="row">
                                 <!-- Price -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <label for="price" class="form-label fw-semibold">
                                         <i class="fas fa-rupee-sign me-1 text-muted"></i>
                                         Monthly Rent <span class="text-danger">*</span>
@@ -87,7 +87,9 @@
                                         Please provide a valid price.
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="row">
                                 <!-- Location -->
                                 <div class="col-md-6 mb-3">
                                     <label for="location" class="form-label fw-semibold">
@@ -95,10 +97,40 @@
                                         Location <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" id="location" name="listing[location]"
-                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park, Pune"
-                                        required>
+                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park" required>
                                     <div class="invalid-feedback">
                                         Please provide a location.
+                                    </div>
+                                </div>
+
+                                <!-- City -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label fw-semibold">
+                                        <i class="fas fa-city me-1 text-muted"></i>
+                                        City <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="city" name="listing[city]"
+                                        class="form-control form-control-lg" placeholder="e.g., Pune" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a city.
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label fw-semibold">
+                                        <i class="fas fa-venus-mars me-1 text-muted"></i>
+                                        Gender Preference <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="gender" name="listing[gender]" class="form-select form-select-lg"
+                                        required>
+                                        <option value="">Select gender preference...</option>
+                                        <option value="Boys">Boys</option>
+                                        <option value="Girls">Girls</option>
+                                        <option value="Any">Any</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a gender preference.
                                     </div>
                                 </div>
                             </div>

@@ -3,7 +3,7 @@ const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
 const Listing = require("../models/listing");
 const upload = require("../middleware/upload");
-const { } = require("../middleware.js");
+const { isLoggedIn, isOwner } = require("../middleware.js");
 
 /* ---------- INDEX: Display all listings ---------- */
 router.get("/", wrapAsync(async (req, res) => {
@@ -21,7 +21,7 @@ router.get("/new", (req, res) => {
 });
 
 /* ---------- CREATE: Save new listing to database ---------- */
-router.post("/", upload.array("imageFiles", 5), wrapAsync(async (req, res) => {
+router.post("/", isLoggedIn, upload.array("imageFiles", 5), wrapAsync(async (req, res) => {
     const listingData = req.body.listing;
     listingData.images = [];
 
@@ -50,6 +50,7 @@ router.post("/", upload.array("imageFiles", 5), wrapAsync(async (req, res) => {
     }
 
     const newListing = new Listing(listingData);
+    newListing.owner = req.user._id;
     await newListing.save();
 
     // Set flash message and redirect
@@ -62,7 +63,13 @@ router.get("/:id", wrapAsync(async (req, res) => {
     const { id } = req.params;
     // Populate reviews and their authors, and the listing owner
     const listing = await Listing.findById(id)
-        .populate("reviews");
+        .populate({
+            path: "reviews",
+            populate: {
+                path: "author"
+            }
+        })
+        .populate("owner");
 
     if (!listing) {
         req.flash("error", "The listing you are looking for does not exist!");
@@ -72,7 +79,7 @@ router.get("/:id", wrapAsync(async (req, res) => {
 }));
 
 /* ---------- EDIT FORM: Render form to edit listing ---------- */
-router.get("/:id/edit", wrapAsync(async (req, res) => {
+router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
 
@@ -84,7 +91,7 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
 }));
 
 /* ---------- UPDATE: Save changes to a listing ---------- */
-router.patch("/:id", upload.array("imageFiles", 5), wrapAsync(async (req, res) => {
+router.patch("/:id", isLoggedIn, isOwner, upload.array("imageFiles", 5), wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listingData = req.body.listing;
 
@@ -136,7 +143,7 @@ router.patch("/:id", upload.array("imageFiles", 5), wrapAsync(async (req, res) =
 }));
 
 /* ---------- DELETE: Remove a listing from database ---------- */
-router.delete("/:id", wrapAsync(async (req, res) => {
+router.delete("/:id", isLoggedIn, isOwner, wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Listing.findByIdAndDelete(id); // Post-delete middleware handles review cleanup
     req.flash("success", "Listing deleted!");

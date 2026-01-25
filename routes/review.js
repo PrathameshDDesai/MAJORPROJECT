@@ -7,13 +7,13 @@ const Review = require("../models/review");
 const upload = require("../middleware/upload");
 const ExpressError = require("../utils/ExpressError");
 
-const { } = require("../middleware.js");
+const { isLoggedIn, isReviewAuthor } = require("../middleware.js");
 
 /**
  * @route   POST /listings/:id/reviews
  * @desc    CREATE: Add a new review to a listing
  */
-router.post("/", wrapAsync(async (req, res) => {
+router.post("/", isLoggedIn, wrapAsync(async (req, res) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing) {
         req.flash("error", "Listing not found!");
@@ -21,6 +21,7 @@ router.post("/", wrapAsync(async (req, res) => {
     }
 
     const newReview = new Review(req.body.review);
+    newReview.author = req.user._id;
     listing.reviews.push(newReview);
 
     await newReview.save();
@@ -34,7 +35,7 @@ router.post("/", wrapAsync(async (req, res) => {
  * @route   PATCH /listings/:id/reviews/:reviewId
  * @desc    UPDATE: Edit an existing review
  */
-router.patch("/:reviewId", wrapAsync(async (req, res) => {
+router.patch("/:reviewId", isLoggedIn, isReviewAuthor, wrapAsync(async (req, res) => {
     const { rating, comment } = req.body.review;
 
     await Review.findByIdAndUpdate(req.params.reviewId, {
@@ -50,7 +51,7 @@ router.patch("/:reviewId", wrapAsync(async (req, res) => {
  * @route   DELETE /listings/:id/reviews/:reviewId
  * @desc    DELETE: Remove a review and update the listing's reference
  */
-router.delete("/:reviewId", wrapAsync(async (req, res) => {
+router.delete("/:reviewId", isLoggedIn, isReviewAuthor, wrapAsync(async (req, res) => {
     const { id, reviewId } = req.params;
 
     // Remove the review's ID from the listing the reviews array

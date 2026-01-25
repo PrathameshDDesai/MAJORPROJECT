@@ -23,31 +23,31 @@
                     </a>
                 </li>
 
-                <% if(!locals.currUser) { %>
+                <% if(currUser) { %>
                     <li class="nav-item">
-                        <a class="nav-link fw-semibold" href="/signup">
-                            Sign Up
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm px-3 ms-2 rounded-pill shadow-sm" href="/login">
-                            Log In
-                        </a>
-                    </li>
-                    <% } else { %>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle fa-lg me-1"></i>
-                                <span class="d-none d-lg-inline">
-                                    <%= locals.currUser.username %>
-                                </span>
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle p-0" href="#" id="userDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle fa-2x text-light"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"
                                 aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/logout"><i
-                                            class="fas fa-sign-out-alt me-2 text-danger"></i>Logout</a></li>
+                                <li><a class="dropdown-item" href="/logout">
+                                        <i class="fas fa-sign-out-alt me-2 text-danger"></i>Logout from this account
+                                    </a></li>
                             </ul>
+                        </div>
+                    </li>
+                    <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="/signup">
+                                Sign Up
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm px-3 ms-2 rounded-pill shadow-sm" href="/login">
+                                Log In
+                            </a>
                         </li>
                         <% } %>
             </ul>

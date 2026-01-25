@@ -26,6 +26,17 @@ const listingSchema = new Schema(
             required: [true, "Location is mandatory"],
             trim: true
         },
+        city: {
+            type: String,
+            required: [true, "City is mandatory"],
+            trim: true
+        },
+        gender: {
+            type: String,
+            required: [true, "Gender preference is mandatory"],
+            enum: ["Boys", "Girls", "Any"],
+            default: "Any"
+        },
         contact: {
             type: String,
             required: [true, "Contact information is mandatory"],
@@ -42,7 +53,11 @@ const listingSchema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: "Review" // Reference to the Review model
             }
-        ]
+        ],
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User" // Reference to the User model (listing owner)
+        }
     },
     {
         timestamps: true, // Automatically adds createdAt and updatedAt
