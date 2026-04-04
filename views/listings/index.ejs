@@ -61,7 +61,7 @@
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listingsContainer">
                 <% allListings.forEach((listing, index)=> { %>
-                    <div class="col listing-item" style="animation-delay: <%= index * 0.1 %>s;">
+                    <div class="col listing-item" style="animation-delay: calc(<%= index %> * 0.1s);">
                         <a href="/listings/<%= listing._id %>" class="text-decoration-none card-link">
                             <div class="card h-100 shadow-sm border listing-card" data-city="<%= listing.city || '' %>"
                                 data-gender="<%= listing.gender || 'Any' %>">

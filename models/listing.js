@@ -66,7 +66,7 @@ const listingSchema = new Schema(
     }
 );
 
-/* 📊 VIRTUAL: Calculate average rating dynamically */
+/* VIRTUAL: Calculate average rating dynamically */
 // Virtual properties are not stored in DB, but calculated on the fly
 listingSchema.virtual("averageRating").get(function () {
     if (!this.reviews || this.reviews.length === 0) {
@@ -76,7 +76,7 @@ listingSchema.virtual("averageRating").get(function () {
     return (sum / this.reviews.length).toFixed(1);
 });
 
-/* 🔥 QUERY MIDDLEWARE: Cascade delete reviews when a listing is removed */
+/*  QUERY MIDDLEWARE: Cascade delete reviews when a listing is removed */
 // This triggers when findOneAndDelete (e.g., delete route) is called
 listingSchema.post("findOneAndDelete", async function (doc) {
     if (doc && doc.reviews.length) {
