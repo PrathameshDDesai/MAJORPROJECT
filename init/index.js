@@ -18,8 +18,15 @@ async function main() {
 
 const initDB = async () => {
     await Listing.deleteMany({});
-    await Listing.insertMany(initData.data);
-    console.log("Data was initialized");
+
+    // Add default geometry, city, and other required fields to all listings
+    const updatedData = initData.data.map((obj) => ({
+        ...obj,
+        owner: "679e09d66144865ae93f7736",
+    }));
+
+    await Listing.insertMany(updatedData);
+    console.log("Data was initialized with default coordinates");
 }
 
 initDB();

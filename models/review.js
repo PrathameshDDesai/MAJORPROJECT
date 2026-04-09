@@ -18,7 +18,7 @@ const reviewSchema = new Schema(
         },
         author: {
             type: Schema.Types.ObjectId,
-            ref: "User" // Reference to User model (if authentication is implemented)
+            ref: "User"
         }
     },
     {

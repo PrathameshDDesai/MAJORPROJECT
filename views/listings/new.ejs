@@ -70,7 +70,7 @@
 
                             <div class="row">
                                 <!-- Price -->
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <label for="price" class="form-label fw-semibold">
                                         <i class="fas fa-rupee-sign me-1 text-muted"></i>
                                         Monthly Rent <span class="text-danger">*</span>
@@ -87,7 +87,9 @@
                                         Please provide a valid price.
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="row">
                                 <!-- Location -->
                                 <div class="col-md-6 mb-3">
                                     <label for="location" class="form-label fw-semibold">
@@ -95,10 +97,40 @@
                                         Location <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" id="location" name="listing[location]"
-                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park, Pune"
-                                        required>
+                                        class="form-control form-control-lg" placeholder="e.g., Koregaon Park" required>
                                     <div class="invalid-feedback">
                                         Please provide a location.
+                                    </div>
+                                </div>
+
+                                <!-- City -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label fw-semibold">
+                                        <i class="fas fa-city me-1 text-muted"></i>
+                                        City <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="city" name="listing[city]"
+                                        class="form-control form-control-lg" placeholder="e.g., Pune" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a city.
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label fw-semibold">
+                                        <i class="fas fa-venus-mars me-1 text-muted"></i>
+                                        Gender Preference <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="gender" name="listing[gender]" class="form-select form-select-lg"
+                                        required>
+                                        <option value="">Select gender preference...</option>
+                                        <option value="Boys">Boys</option>
+                                        <option value="Girls">Girls</option>
+                                        <option value="Any">Any</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a gender preference.
                                     </div>
                                 </div>
                             </div>
@@ -124,25 +156,81 @@
                         <!-- Image Section -->
                         <div class="form-section mb-4">
                             <div class="section-header mb-3">
-                                <h5 class="text-success mb-0">
-                                    <i class="fas fa-images me-2"></i>Room Image
+                                <h5 class="text-primary mb-0">
+                                    <i class="fas fa-images me-2"></i>Room Images (Up to 5)
                                 </h5>
                                 <hr class="mt-2">
                             </div>
 
-                            <!-- Upload Image -->
-                            <div class="mb-3">
-                                <label for="imageFile" class="form-label fw-semibold">
-                                    <i class="fas fa-upload me-1 text-muted"></i>
-                                    Upload Image
+                            <!-- Upload Multiple Images via Local Storage -->
+                            <div class="mb-4" id="file-inputs-container">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-desktop me-1 text-muted"></i>
+                                    Upload from Device
                                 </label>
-                                <input type="file" id="imageFile" name="imageFile" class="form-control form-control-lg"
-                                    accept="image/*">
-                                <div class="form-text">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Supported formats: JPG, PNG, GIF. Max size: 5MB
+                                <div class="input-group mb-2 file-input-group">
+                                    <input type="file" name="imageFiles" class="form-control" accept="image/*">
+                                    <button type="button" class="btn btn-outline-primary add-file-field">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
+
+                            <!-- Image Preview Area -->
+                            <div id="image-preview-container" class="row row-cols-3 g-2 mb-3"></div>
+
+                            <script>
+                                // Dynamic File fields
+                                document.querySelector('.add-file-field').addEventListener('click', function () {
+                                    const container = document.getElementById('file-inputs-container');
+                                    if (container.querySelectorAll('.file-input-group').length < 5) {
+                                        const div = document.createElement('div');
+                                        div.className = 'input-group mb-2 file-input-group';
+                                        div.innerHTML = `
+                                            <input type="file" name="imageFiles" class="form-control" accept="image/*">
+                                            <button type="button" class="btn btn-outline-danger remove-file-field">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        `;
+                                        container.appendChild(div);
+
+                                        div.querySelector('.remove-file-field').addEventListener('click', function () {
+                                            div.remove();
+                                            updatePreviews();
+                                        });
+
+                                        div.querySelector('input').addEventListener('change', updatePreviews);
+                                    } else {
+                                        alert("Maximum 5 local files allowed");
+                                    }
+                                });
+
+                                // Preview logic
+                                function updatePreviews() {
+                                    const previewContainer = document.getElementById('image-preview-container');
+                                    previewContainer.innerHTML = '';
+                                    const files = document.querySelectorAll('input[name="imageFiles"]');
+
+                                    files.forEach(input => {
+                                        if (input.files && input.files[0]) {
+                                            const reader = new FileReader();
+                                            reader.onload = function (e) {
+                                                const col = document.createElement('div');
+                                                col.className = 'col';
+                                                col.innerHTML = `
+                                                    <div class="card h-100 shadow-sm border-0">
+                                                        <img src="${e.target.result}" class="card-img-top rounded shadow-sm" style="height: 100px; object-fit: cover;">
+                                                    </div>
+                                                `;
+                                                previewContainer.appendChild(col);
+                                            };
+                                            reader.readAsDataURL(input.files[0]);
+                                        }
+                                    });
+                                }
+
+                                document.querySelector('input[name="imageFiles"]').addEventListener('change', updatePreviews);
+                            </script>
 
                             <div class="text-center my-3">
                                 <span class="badge bg-secondary px-3 py-2">
@@ -150,20 +238,49 @@
                                 </span>
                             </div>
 
-                            <!-- Image URL -->
-                            <div class="mb-3">
-                                <label for="imageUrl" class="form-label fw-semibold">
+                            <!-- Multiple Image URLs -->
+                            <div class="mb-3" id="url-inputs-container">
+                                <label class="form-label fw-semibold">
                                     <i class="fas fa-link me-1 text-muted"></i>
-                                    Image URL
+                                    Image URLs
                                 </label>
-                                <input type="url" id="imageUrl" name="listing[image]"
-                                    class="form-control form-control-lg" placeholder="https://example.com/image.jpg">
-                                <div class="form-text">
-                                    <i class="fas fa-globe me-1"></i>
-                                    Provide an image URL as an alternative to uploading
+                                <div class="input-group mb-2 url-input-group">
+                                    <input type="url" name="imageUrls" class="form-control"
+                                        placeholder="https://example.com/image.jpg">
+                                    <button type="button" class="btn btn-outline-primary add-url-field">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
+                            <div class="form-text">
+                                <i class="fas fa-globe me-1"></i>
+                                Provide external image links as an alternative to uploading
+                            </div>
                         </div>
+
+                        <script>
+                            // Dynamic URL fields
+                            document.querySelector('.add-url-field').addEventListener('click', function () {
+                                const container = document.getElementById('url-inputs-container');
+                                if (container.querySelectorAll('.url-input-group').length < 5) {
+                                    const div = document.createElement('div');
+                                    div.className = 'input-group mb-2 url-input-group';
+                                    div.innerHTML = `
+                                        <input type="url" name="imageUrls" class="form-control" placeholder="https://example.com/another-image.jpg">
+                                        <button type="button" class="btn btn-outline-danger remove-url-field">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    `;
+                                    container.appendChild(div);
+
+                                    div.querySelector('.remove-url-field').addEventListener('click', function () {
+                                        div.remove();
+                                    });
+                                } else {
+                                    alert("Maximum 5 image URLs allowed");
+                                }
+                            });
+                        </script>
 
                         <!-- Action Buttons -->
                         <div class="d-flex flex-column flex-md-row gap-3 mt-5 pt-3 border-top">
