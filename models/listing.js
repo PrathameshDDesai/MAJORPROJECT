@@ -31,6 +31,10 @@ const listingSchema = new Schema(
             required: [true, "City is mandatory"],
             trim: true
         },
+        mapLink: {
+            type: String,
+            trim: true
+        },
         gender: {
             type: String,
             required: [true, "Gender preference is mandatory"],
@@ -57,6 +61,18 @@ const listingSchema = new Schema(
         owner: {
             type: Schema.Types.ObjectId,
             ref: "User" // Reference to the User model (listing owner)
+        },
+        coordinates: {
+            type: [Number], // [lng, lat]
+            default: [72.8777, 19.0760] // Default to Mumbai coordinates
+        },
+        viewsCount: {
+            type: Number,
+            default: 0
+        },
+        isHidden: {
+            type: Boolean,
+            default: false
         }
     },
     {

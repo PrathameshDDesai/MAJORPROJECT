@@ -137,6 +137,97 @@
                                         Please select a gender preference.
                                     </div>
                                 </div>
+
+                                <!-- Interactive Map Selector -->
+                                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+                                <div class="col-md-12 mb-4">
+                                    <label class="form-label fw-semibold text-success">
+                                        <i class="fas fa-map-marked-alt me-1"></i>
+                                        Pin Exact Location on Map <span class="text-danger">*</span>
+                                    </label>
+                                    
+                                    <div class="input-group mb-2 shadow-sm rounded-3 overflow-hidden">
+                                        <input type="text" id="mapSearchInput" class="form-control border-light" placeholder="Search address to pin on map...">
+                                        <button class="btn btn-primary" type="button" id="mapSearchBtn">
+                                            <i class="fas fa-search me-1"></i>Find Address
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="map" style="height: 320px; width: 100%; border-radius: 12px; z-index: 1;" class="border shadow-sm mb-3"></div>
+                                    
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label for="longitude" class="form-label small text-secondary fw-semibold">Longitude</label>
+                                            <input type="number" step="any" id="longitude" name="listing[coordinates][]" class="form-control form-control-sm border-2 rounded-3 bg-light" value="<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[0] : 72.8777 %>" required readonly>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="latitude" class="form-label small text-secondary fw-semibold">Latitude</label>
+                                            <input type="number" step="any" id="latitude" name="listing[coordinates][]" class="form-control form-control-sm border-2 rounded-3 bg-light" value="<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[1] : 19.0760 %>" required readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", () => {
+                                        // Load existing coords or default to Mumbai
+                                        const lat = parseFloat("<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[1] : 19.0760 %>");
+                                        const lng = parseFloat("<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[0] : 72.8777 %>");
+                                        const initialCoords = [lat, lng];
+                                        
+                                        const map = L.map('map').setView(initialCoords, 14);
+                                        
+                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                            attribution: '&copy; OpenStreetMap contributors'
+                                        }).addTo(map);
+                                        
+                                        let marker = L.marker(initialCoords, { draggable: true }).addTo(map);
+                                        
+                                        function updateInputs(lat, lng) {
+                                            document.getElementById('latitude').value = lat;
+                                            document.getElementById('longitude').value = lng;
+                                        }
+                                        
+                                        marker.on('dragend', function (e) {
+                                            const position = marker.getLatLng();
+                                            updateInputs(position.lat, position.lng);
+                                        });
+                                        
+                                        map.on('click', function (e) {
+                                            marker.setLatLng(e.latlng);
+                                            updateInputs(e.latlng.lat, e.latlng.lng);
+                                        });
+                                        
+                                        const searchBtn = document.getElementById('mapSearchBtn');
+                                        const searchInput = document.getElementById('mapSearchInput');
+                                        
+                                        if (searchBtn && searchInput) {
+                                            searchBtn.addEventListener('click', () => {
+                                                const query = searchInput.value.trim();
+                                                if (!query) return;
+                                                
+                                                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                                                    .then(res => res.json())
+                                                    .then(data => {
+                                                        if (data && data.length > 0) {
+                                                            const result = data[0];
+                                                            const nLat = parseFloat(result.lat);
+                                                            const nLon = parseFloat(result.lon);
+                                                            const newLatLng = new L.LatLng(nLat, nLon);
+                                                            
+                                                            map.setView(newLatLng, 15);
+                                                            marker.setLatLng(newLatLng);
+                                                            updateInputs(nLat, nLon);
+                                                        } else {
+                                                            alert('Location not found. Try searching or dragging the pin.');
+                                                        }
+                                                    })
+                                                    .catch(err => console.error('Nominatim error:', err));
+                                            });
+                                        }
+                                    });
+                                </script>
                             </div>
 
                             <!-- Contact -->

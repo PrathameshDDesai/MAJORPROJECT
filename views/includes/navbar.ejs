@@ -10,42 +10,86 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
+                <!-- Theme Toggle -->
+                <li class="nav-item me-2">
+                    <button class="btn btn-link nav-link border-0 p-2 text-decoration-none" id="themeToggler" type="button" title="Toggle Dark/Light Mode" style="box-shadow: none;">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </li>
+
+                <!-- Language Selector -->
+                <li class="nav-item me-3">
+                    <div class="d-flex align-items-center bg-dark rounded-pill px-2 border border-secondary" style="height: 34px;">
+                        <i class="fas fa-globe text-muted me-1 small"></i>
+                        <select id="langSelect" onchange="setLanguage(this.value)" class="form-select form-select-sm border-0 bg-transparent text-light shadow-none py-0 ps-1 pe-4" style="font-size: 0.825rem; cursor: pointer;">
+                            <option value="en" class="bg-dark text-light">English</option>
+                            <option value="hi" class="bg-dark text-light">हिन्दी</option>
+                            <option value="mr" class="bg-dark text-light">मराठी</option>
+                        </select>
+                    </div>
+                </li>
+
                 <li class="nav-item me-3">
                     <a class="nav-link <%= (locals.currentPath === '/listings') ? 'active' : '' %>" href="/listings">
-                        <i class="fas fa-compass me-1"></i>Explore
+                        <i class="fas fa-compass me-1"></i><span data-i18n="explore">Explore</span>
                     </a>
                 </li>
 
                 <li class="nav-item me-3">
                     <a class="nav-link <%= (locals.currentPath === '/listings/new') ? 'active' : '' %>"
                         href="/listings/new">
-                        <i class="fas fa-plus-circle me-1"></i>Add Listing
+                        <i class="fas fa-plus-circle me-1"></i><span data-i18n="addListing">Add Listing</span>
                     </a>
                 </li>
 
                 <% if(currUser) { %>
                     <li class="nav-item">
                         <div class="dropdown">
-                            <a class="nav-link dropdown-toggle p-0" href="#" id="userDropdown" role="button"
+                            <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="userDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user-circle fa-2x text-light"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"
                                 aria-labelledby="userDropdown">
+                                <li>
+                                    <h6 class="dropdown-header text-dark fw-bold"><span data-i18n="hello">Hello</span>, <%= currUser.fullname %></h6>
+                                </li>
+                                <li><a class="dropdown-item" href="/dashboard">
+                                        <i class="fas fa-tachometer-alt me-2 text-primary"></i><span data-i18n="myDashboard">My Dashboard</span>
+                                    </a></li>
+                                <li><a class="dropdown-item" href="/chat">
+                                        <i class="fas fa-comments me-2 text-info"></i><span data-i18n="myMessages">My Messages</span>
+                                    </a></li>
+                                <% if(currUser.role === 'Student') { %>
+                                    <li><a class="dropdown-item" href="/wishlist">
+                                            <i class="fas fa-heart me-2 text-danger"></i><span data-i18n="myWishlist">My Wishlist</span>
+                                        </a></li>
+                                <% } %>
+                                <% if(currUser.role === 'Owner') { %>
+                                    <li><a class="dropdown-item" href="/users/verify">
+                                            <i class="fas fa-user-check me-2 text-success"></i><span data-i18n="verificationDetails">Verification Details</span>
+                                        </a></li>
+                                <% } %>
+                                <% if(currUser.role === 'Admin' || currUser.isAdmin) { %>
+                                    <li><a class="dropdown-item" href="/admin/verifications">
+                                            <i class="fas fa-user-shield me-2 text-warning"></i><span data-i18n="auditVerifications">Audit Verifications</span>
+                                        </a></li>
+                                <% } %>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="/logout">
-                                        <i class="fas fa-sign-out-alt me-2 text-danger"></i>Logout from this account
+                                        <i class="fas fa-sign-out-alt me-2 text-danger"></i><span data-i18n="logout">Logout</span>
                                     </a></li>
                             </ul>
                         </div>
                     </li>
                     <% } else { %>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="/signup">
+                            <a class="nav-link fw-semibold" href="/signup" data-i18n="signup">
                                 Sign Up
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary btn-sm px-3 ms-2 rounded-pill shadow-sm" href="/login">
+                            <a class="btn btn-primary btn-sm px-3 ms-2 rounded-pill shadow-sm" href="/login" data-i18n="login">
                                 Log In
                             </a>
                         </li>

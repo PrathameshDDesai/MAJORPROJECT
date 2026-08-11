@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
-const { saveRedirectUrl } = require("../middleware");
+const { saveRedirectUrl, isLoggedIn, isAdmin } = require("../middleware");
 const userController = require("../controllers/users");
 
 // ==================== SIGNUP ROUTES ====================
@@ -29,4 +29,14 @@ router.route("/login")
 // GET /logout - Handle user logout
 router.get("/logout", userController.logout);
 
+// ==================== WISHLIST ROUTE ====================
+router.get("/wishlist", isLoggedIn, wrapAsync(userController.renderWishlist));
+
+// ==================== DASHBOARD ROUTE ====================
+router.get("/dashboard", isLoggedIn, wrapAsync(userController.renderDashboard));
+
+// ==================== ADMIN USER MANAGEMENT ====================
+router.delete("/admin/users/:id", isLoggedIn, isAdmin, wrapAsync(userController.deleteUser));
+
 module.exports = router;
+

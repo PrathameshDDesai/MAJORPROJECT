@@ -1,0 +1,294 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Socket.io Library -->
+<script src="/socket.io/socket.io.js"></script>
+
+<div class="container my-5 animate__animated animate__fadeIn">
+    <div class="row g-4 chat-wrapper" style="height: 600px;">
+        
+        <!-- Left Column: Active Chats List -->
+        <div class="col-md-4 h-100">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="far fa-comments me-2 text-primary"></i>My Messages</h5>
+                </div>
+                <div class="list-group list-group-flush overflow-auto h-100" id="contactsList">
+                    <% if (conversations.length === 0) { %>
+                        <div class="text-center py-5 text-muted">
+                            <i class="far fa-comment-dots fa-3x mb-3 text-secondary"></i>
+                            <p class="mb-0 small">No active conversations</p>
+                        </div>
+                    <% } else { %>
+                        <% conversations.forEach(chat => { %>
+                            <button type="button" 
+                                    class="list-group-item list-group-item-action border-0 px-4 py-3 d-flex align-items-center contact-item <%= (activeContact && activeContact._id.toString() === chat.user._id.toString()) ? 'active bg-primary bg-opacity-10 text-primary' : '' %>"
+                                    data-id="<%= chat.user._id %>"
+                                    data-name="<%= chat.user.fullname %>">
+                                
+                                <div class="position-relative me-3">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
+                                        <%= chat.user.fullname.charAt(0) %>
+                                    </div>
+                                    <span class="position-absolute bottom-0 end-0 p-1 bg-secondary border border-2 border-white rounded-circle status-dot" id="status-<%= chat.user._id %>"></span>
+                                </div>
+
+                                <div class="flex-grow-1 min-width-0">
+                                    <div class="d-flex justify-content-between align-items-baseline">
+                                        <h6 class="mb-0 fw-bold text-dark text-truncate" style="max-width: 130px;"><%= chat.user.fullname %></h6>
+                                        <small class="text-muted" style="font-size: 0.7rem;"><%= new Date(chat.timestamp).toLocaleDateString() %></small>
+                                    </div>
+                                    <p class="mb-0 small text-muted text-truncate" id="lastMsg-<%= chat.user._id %>"><%= chat.lastMessage %></p>
+                                </div>
+                            </button>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Active Chat Feed Window -->
+        <div class="col-md-8 h-100">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white d-flex flex-column" id="chatWindow">
+                
+                <!-- Chat Window Header -->
+                <div class="card-header bg-light border-0 py-3 d-flex align-items-center justify-content-between" id="chatHeader">
+                    <% if (activeContact) { %>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 44px; height: 44px;">
+                                <%= activeContact.fullname.charAt(0) %>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark" id="activeName"><%= activeContact.fullname %></h6>
+                                <small class="text-success small" id="activeStatus">Connecting...</small>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="text-muted py-2">
+                            Select a conversation to start messaging
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Messages Feed Block -->
+                <div class="card-body overflow-auto flex-grow-1 p-4 bg-light d-flex flex-column gap-3" id="messagesFeed" style="background-color: #f8fafc !important;">
+                    <% if (!activeContact) { %>
+                        <div class="m-auto text-center text-muted">
+                            <i class="far fa-paper-plane fa-4x mb-3 text-secondary"></i>
+                            <h5 class="fw-bold">Your Inbox</h5>
+                            <p class="small mb-0">Select an active contact or click "Chat" on listing pages to open conversations.</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Input Message Box Form -->
+                <div class="card-footer bg-white border-0 p-3" id="chatInputArea" style="display: <%= activeContact ? 'block' : 'none' %>;">
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="text-muted small mb-2 d-none">
+                        <span class="fst-italic" id="typingText">User is typing...</span>
+                    </div>
+
+                    <form id="chatForm" class="d-flex gap-2">
+                        <input type="text" id="messageInput" class="form-control rounded-pill border-2 px-4" placeholder="Type a message..." autocomplete="off" required>
+                        <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 46px; height: 46px; padding: 0;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const socket = io();
+        
+        const currentUserId = "<%= currUser._id %>";
+        let activeRecipientId = "<%= activeContact ? activeContact._id : '' %>";
+        
+        // Register connection state
+        socket.emit("register", currentUserId);
+
+        const messagesFeed = document.getElementById("messagesFeed");
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const activeStatus = document.getElementById("activeStatus");
+        const typingIndicator = document.getElementById("typingIndicator");
+        
+        // Auto Scroll Feed to Bottom
+        function scrollToBottom() {
+            if (messagesFeed) {
+                messagesFeed.scrollTop = messagesFeed.scrollHeight;
+            }
+        }
+
+        // Add message to view
+        function appendMessage(msg, isSent) {
+            if (!messagesFeed) return;
+            
+            const outerDiv = document.createElement("div");
+            outerDiv.className = `d-flex ${isSent ? 'justify-content-end' : 'justify-content-start'}`;
+            
+            const innerDiv = document.createElement("div");
+            innerDiv.className = `p-3 rounded-4 shadow-sm max-width-70 ${isSent ? 'bg-primary text-white' : 'bg-white text-dark border'}`;
+            innerDiv.style.maxWidth = "70%";
+            innerDiv.style.wordBreak = "break-word";
+            
+            const textP = document.createElement("p");
+            textP.className = "mb-1 small";
+            textP.textContent = msg.text;
+            
+            const timeSpan = document.createElement("span");
+            timeSpan.className = `d-block text-end ${isSent ? 'text-white-50' : 'text-muted'}`;
+            timeSpan.style.fontSize = "0.65rem";
+            timeSpan.textContent = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            innerDiv.appendChild(textP);
+            innerDiv.appendChild(timeSpan);
+            outerDiv.appendChild(innerDiv);
+            
+            messagesFeed.appendChild(outerDiv);
+            scrollToBottom();
+        }
+
+        // Fetch Message History
+        async function loadHistory(contactId) {
+            if (!messagesFeed) return;
+            messagesFeed.innerHTML = "";
+            
+            try {
+                const res = await fetch(`/chat/history/${contactId}`);
+                const data = await res.json();
+                if (data.success) {
+                    data.messages.forEach(msg => {
+                        appendMessage(msg, msg.sender === currentUserId);
+                    });
+                }
+            } catch (err) {
+                console.error("Error loading chat history:", err);
+            }
+        }
+
+        // Init load if preselected
+        if (activeRecipientId) {
+            loadHistory(activeRecipientId);
+            activeStatus.textContent = "Online";
+        }
+
+        // Select other contacts
+        document.querySelectorAll(".contact-item").forEach(item => {
+            item.addEventListener("click", async function() {
+                document.querySelectorAll(".contact-item").forEach(i => i.classList.remove("active", "bg-primary", "bg-opacity-10", "text-primary"));
+                this.classList.add("active", "bg-primary", "bg-opacity-10", "text-primary");
+                
+                activeRecipientId = this.getAttribute("data-id");
+                const name = this.getAttribute("data-name");
+                
+                // Show inputs area
+                document.getElementById("chatInputArea").style.display = "block";
+                
+                // Redraw chat header
+                const chatHeader = document.getElementById("chatHeader");
+                chatHeader.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 44px; height: 44px;">
+                            ${name.charAt(0)}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark" id="activeName">${name}</h6>
+                            <small class="text-success small" id="activeStatus">Online</small>
+                        </div>
+                    </div>
+                `;
+                
+                loadHistory(activeRecipientId);
+            });
+        });
+
+        // Handle Form Message Submit
+        if (chatForm) {
+            chatForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const text = messageInput.value.trim();
+                if (!text || !activeRecipientId) return;
+                
+                // Send over Socket
+                socket.emit("sendMessage", {
+                    recipientId: activeRecipientId,
+                    text
+                });
+                
+                messageInput.value = "";
+                
+                // Emit stop typing
+                socket.emit("typing", { recipientId: activeRecipientId, isTyping: false });
+            });
+
+            // Send typing indicator
+            let typingTimeout;
+            messageInput.addEventListener("input", () => {
+                socket.emit("typing", { recipientId: activeRecipientId, isTyping: true });
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    socket.emit("typing", { recipientId: activeRecipientId, isTyping: false });
+                }, 2000);
+            });
+        }
+
+        // Live Socket Listeners
+        socket.on("receiveMessage", (msg) => {
+            if (msg.sender === activeRecipientId) {
+                appendMessage(msg, false);
+            }
+            
+            // Update last message in left contacts list
+            const lastMsgField = document.getElementById(`lastMsg-${msg.sender}`);
+            if (lastMsgField) {
+                lastMsgField.textContent = msg.text;
+                lastMsgField.classList.add("fw-bold", "text-dark");
+            }
+        });
+
+        socket.on("messageSent", (msg) => {
+            if (msg.receiver === activeRecipientId) {
+                appendMessage(msg, true);
+            }
+            const lastMsgField = document.getElementById(`lastMsg-${msg.receiver}`);
+            if (lastMsgField) {
+                lastMsgField.textContent = msg.text;
+                lastMsgField.classList.remove("fw-bold", "text-dark");
+            }
+        });
+
+        socket.on("typingStatus", (data) => {
+            if (data.senderId === activeRecipientId) {
+                if (data.isTyping) {
+                    typingIndicator.classList.remove("d-none");
+                } else {
+                    typingIndicator.classList.add("d-none");
+                }
+            }
+        });
+
+        socket.on("userStatus", (data) => {
+            const dot = document.getElementById(`status-${data.userId}`);
+            if (dot) {
+                if (data.status === "online") {
+                    dot.className = "position-absolute bottom-0 end-0 p-1 bg-success border border-2 border-white rounded-circle status-dot";
+                } else {
+                    dot.className = "position-absolute bottom-0 end-0 p-1 bg-secondary border border-2 border-white rounded-circle status-dot";
+                }
+            }
+            
+            if (data.userId === activeRecipientId) {
+                const activeStatus = document.getElementById("activeStatus");
+                if (activeStatus) {
+                    activeStatus.textContent = data.status === "online" ? "Online" : "Offline";
+                }
+            }
+        });
+    });
+</script>

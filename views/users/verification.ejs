@@ -1,0 +1,91 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 border-0">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-user-shield me-2"></i>Owner Verification</h3>
+                    <p class="mb-0 text-white-50">Verify your account to start listing student accommodations</p>
+                </div>
+                <div class="card-body p-5">
+                    
+                    <% if (request) { %>
+                        <div class="status-card mb-4 text-center p-4 rounded-3 
+                            <%= request.status === 'Approved' ? 'bg-success-subtle text-success border border-success' : 
+                                request.status === 'Rejected' ? 'bg-danger-subtle text-danger border border-danger' : 
+                                'bg-warning-subtle text-warning border border-warning' %>">
+                            <h4 class="fw-bold mb-2">
+                                <% if (request.status === 'Approved') { %>
+                                    <i class="fas fa-check-circle me-2"></i>Approved
+                                <% } else if (request.status === 'Rejected') { %>
+                                    <i class="fas fa-times-circle me-2"></i>Rejected
+                                <% } else { %>
+                                    <i class="fas fa-spinner fa-spin me-2"></i>Pending Review
+                                <% } %>
+                            </h4>
+                            
+                            <% if (request.status === 'Approved') { %>
+                                <p class="mb-0 text-dark-50">Congratulations! You are verified as a property owner. You can now create and manage room listings.</p>
+                            <% } else if (request.status === 'Rejected') { %>
+                                <p class="mb-2 text-dark-50">Your verification request was rejected.</p>
+                                <% if (request.remarks) { %>
+                                    <div class="alert alert-danger mb-0 text-start py-2 px-3 mt-2">
+                                        <strong>Rejection Reason:</strong> <%= request.remarks %>
+                                    </div>
+                                <% } %>
+                                <p class="mt-3 mb-0 text-muted">You can correct the details and submit the form again below.</p>
+                            <% } else { %>
+                                <p class="mb-0 text-dark-50">Your request is currently under review by our administration. You will be notified once a decision has been made.</p>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <% if (!request || request.status === 'Rejected') { %>
+                        <form action="/users/verify" method="POST" class="needs-validation" novalidate>
+                            <div class="mb-4">
+                                <label for="fullName" class="form-label fw-semibold text-secondary">
+                                    <i class="fas fa-id-card me-2"></i>Full Name
+                                </label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-2" id="fullName" name="fullName" 
+                                    value="<%= request ? request.fullName : currUser.fullname %>" placeholder="Enter your full legal name" required>
+                                <div class="invalid-feedback">Please enter your full name.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="phone" class="form-label fw-semibold text-secondary">
+                                    <i class="fas fa-phone-alt me-2"></i>Phone Number
+                                </label>
+                                <input type="tel" class="form-control form-control-lg rounded-3 border-2" id="phone" name="phone" 
+                                    value="<%= request ? request.phone : (currUser.phoneNumber || '') %>" placeholder="e.g. +91 98765 43210" required>
+                                <div class="invalid-feedback">Please enter a valid phone number.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="propertyAddress" class="form-label fw-semibold text-secondary">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Primary Property Address
+                                </label>
+                                <textarea class="form-control rounded-3 border-2" id="propertyAddress" name="propertyAddress" rows="4" 
+                                    placeholder="Enter the complete address of the property you intend to list..." required><%= request ? request.propertyAddress : (currUser.address || '') %></textarea>
+                                <div class="invalid-feedback">Please specify your primary property address.</div>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                    Submit Request for Verification <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    <% } else { %>
+                        <div class="text-center mt-4">
+                            <a href="/listings" class="btn btn-outline-primary rounded-pill px-4">
+                                <i class="fas fa-arrow-left me-2"></i>Back to listings
+                            </a>
+                        </div>
+                    <% } %>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

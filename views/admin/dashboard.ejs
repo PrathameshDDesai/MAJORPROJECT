@@ -1,0 +1,270 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5 animate__animated animate__fadeIn">
+    <!-- Header Admin Card -->
+    <div class="card border-0 shadow-sm bg-dark text-white rounded-4 p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="bg-white bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                    <i class="fas fa-user-shield fa-2x text-warning"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h2 class="mb-0 fw-bold">Administrator & Host Panel</h2>
+                <p class="mb-0 text-white-50">Manage platform users, inspect all property creations, edit/delete invalid listings</p>
+            </div>
+            <div class="col-md-auto mt-3 mt-md-0">
+                <a href="/admin/verifications" class="btn btn-warning rounded-pill px-4">
+                    <i class="fas fa-id-card me-1"></i> Owner Verifications
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold">Platform Users</span>
+                    <i class="fas fa-users text-primary fa-lg"></i>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark"><%= usersCount %></h3>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold">Properties Listed</span>
+                    <i class="fas fa-home text-success fa-lg"></i>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark"><%= listingsCount %></h3>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold">Visits Booked</span>
+                    <i class="far fa-calendar-check text-info fa-lg"></i>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark"><%= bookingsCount %></h3>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold">Total Reviews</span>
+                    <i class="fas fa-star text-warning fa-lg"></i>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark"><%= reviewsCount %></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Navigation Pill Tabs -->
+    <ul class="nav nav-pills nav-fill mb-4 border p-2 rounded-pill bg-white shadow-sm" id="adminDashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-bold" id="admin-listings-tab" data-bs-toggle="pill" data-bs-target="#admin-listings" type="button" role="tab" aria-controls="admin-listings" aria-selected="true">
+                <i class="fas fa-home me-2 text-success"></i>All Property Listings (<%= allListings.length %>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold" id="admin-users-tab" data-bs-toggle="pill" data-bs-target="#admin-users" type="button" role="tab" aria-controls="admin-users" aria-selected="false">
+                <i class="fas fa-users me-2 text-primary"></i>Platform Users (<%= allUsers.length %>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold" id="admin-verifications-tab" data-bs-toggle="pill" data-bs-target="#admin-verifications" type="button" role="tab" aria-controls="admin-verifications" aria-selected="false">
+                <i class="fas fa-user-check me-2 text-warning"></i>Owner Verifications (<%= verifications.length %>)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content Area -->
+    <div class="tab-content" id="adminDashboardTabContent">
+        
+        <!-- Tab 1: All Property Listings -->
+        <div class="tab-pane fade show active" id="admin-listings" role="tabpanel" aria-labelledby="admin-listings-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-list me-2 text-success"></i>All Property Listings Across Platform</h4>
+                    <span class="text-muted small">Full Admin Controls (View, Edit, Hide, Delete)</span>
+                </div>
+
+                <% if (allListings.length === 0) { %>
+                    <p class="text-muted text-center py-4">No property listings found.</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead class="table-light text-muted small uppercase fw-bold">
+                                <tr>
+                                    <th>Property Title</th>
+                                    <th>Location & City</th>
+                                    <th>Price</th>
+                                    <th>Created By (Owner)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% allListings.forEach(l => { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/listings/<%= l._id %>" class="fw-bold text-dark text-decoration-none">
+                                                <%= l.title %>
+                                            </a>
+                                        </td>
+                                        <td><small class="text-muted"><%= l.location %>, <%= l.city %></small></td>
+                                        <td><span class="fw-bold text-success">₹<%= l.price ? l.price.toLocaleString("en-IN") : "0" %></span></td>
+                                        <td>
+                                            <span class="fw-medium"><%= l.owner ? l.owner.fullname : 'Unknown' %></span>
+                                            <small class="text-muted d-block">@<%= l.owner ? l.owner.username : 'n/a' %></small>
+                                        </td>
+                                        <td>
+                                            <% if (l.isHidden) { %>
+                                                <span class="badge badge-hidden" data-i18n="listingHiddenBadge"><i class="fas fa-eye-slash me-1"></i>Hidden</span>
+                                            <% } else { %>
+                                                <span class="badge badge-visible" data-i18n="listingVisibleBadge"><i class="fas fa-eye me-1"></i>Visible</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 flex-wrap">
+                                                <a href="/listings/<%= l._id %>" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="/listings/<%= l._id %>/edit" class="btn btn-sm btn-warning rounded-pill">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form action="/listings/<%= l._id %>/toggle-visibility" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm <%= l.isHidden ? 'btn-success' : 'btn-secondary' %> rounded-pill">
+                                                        <i class="fas <%= l.isHidden ? 'fa-eye' : 'fa-eye-slash' %>"></i> <%= l.isHidden ? 'Unhide' : 'Hide' %>
+                                                    </button>
+                                                </form>
+                                                <form action="/listings/<%= l._id %>?_method=DELETE" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this listing as Admin?');">
+                                                    <button type="submit" class="btn btn-sm btn-danger rounded-pill">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Tab 2: All Platform Users -->
+        <div class="tab-pane fade" id="admin-users" role="tabpanel" aria-labelledby="admin-users-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-users me-2 text-primary"></i>All Registered Users</h4>
+                    <span class="text-muted small">Manage account roles and access</span>
+                </div>
+
+                <% if (allUsers.length === 0) { %>
+                    <p class="text-muted text-center py-4">No users registered.</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead class="table-light text-muted small uppercase fw-bold">
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Verification</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% allUsers.forEach(u => { %>
+                                    <tr>
+                                        <td class="fw-bold text-dark"><%= u.fullname %></td>
+                                        <td><code>@<%= u.username %></code></td>
+                                        <td><%= u.email %></td>
+                                        <td>
+                                            <span class="badge rounded-pill px-3 py-1 
+                                                <%= u.role === 'Admin' || u.isAdmin ? 'bg-danger text-white' : 
+                                                    u.role === 'Owner' ? 'bg-success text-white' : 'bg-primary text-white' %>">
+                                                <%= u.role || 'Student' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% if (u.isVerifiedOwner) { %>
+                                                <span class="badge bg-success rounded-pill px-2"><i class="fas fa-check-circle me-1"></i>Verified</span>
+                                            <% } else if(u.role === 'Owner') { %>
+                                                <span class="badge bg-warning text-dark rounded-pill px-2">Unverified</span>
+                                            <% } else { %>
+                                                <span class="text-muted small">N/A</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (!u.isAdmin && u.role !== 'Admin') { %>
+                                                <form action="/admin/users/<%= u._id %>?_method=DELETE" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user and all their listings?');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                                                        <i class="fas fa-user-minus me-1"></i> Delete User
+                                                    </button>
+                                                </form>
+                                            <% } else { %>
+                                                <span class="badge bg-dark">Host / Admin</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Tab 3: Owner Verification Requests -->
+        <div class="tab-pane fade" id="admin-verifications" role="tabpanel" aria-labelledby="admin-verifications-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-user-check me-2 text-warning"></i>Owner Verification Requests</h4>
+                    <a href="/admin/verifications" class="btn btn-warning btn-sm rounded-pill px-3">Full Audit Page</a>
+                </div>
+
+                <% if (verifications.length === 0) { %>
+                    <p class="text-muted text-center py-4">No verification requests found.</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead class="table-light text-muted small uppercase fw-bold">
+                                <tr>
+                                    <th>Applicant Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% verifications.forEach(v => { %>
+                                    <tr>
+                                        <td class="fw-bold"><%= v.fullName %></td>
+                                        <td><%= v.phone %></td>
+                                        <td>
+                                            <span class="badge rounded-pill px-3 py-1 
+                                                <%= v.status === 'Approved' ? 'bg-success' : 
+                                                    v.status === 'Rejected' ? 'bg-danger' : 'bg-warning text-dark' %>">
+                                                <%= v.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/verifications" class="btn btn-sm btn-outline-warning rounded-pill">Audit Request</a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+</div>

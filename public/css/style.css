@@ -1,46 +1,96 @@
-/* ===============================================
-   MODERN DESIGN SYSTEM - 4-COLOR PALETTE
-   ===============================================
-   
-   1. Primary (Slate):   #0f172a - Navigation, Headings
-   2. Action (Blue):     #3b82f6 - Buttons, Highlights
-   3. Background:       #f1f5f9 - Page Background
-   4. Surface:          #ffffff - Cards, Sections
-   
-   Neutral Shades:
-   - Text (Main):       #1e293b
-   - Text (Muted):      #64748b
-   - Border:            #e2e8f0
-   =============================================== */
-
+/* Day Mode (Light Royal Theme with Gold Accents) */
 :root {
-    --primary: #0f172a;
-    --primary-light: #1e293b;
-    --action: #3b82f6;
-    --action-hover: #2563eb;
-    --bg-page: #f1f5f9;
-    --bg-surface: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
+    --primary: #b8860b;            /* Rich Dark Goldenrod */
+    --primary-light: #d4af37;      /* Bright Gold */
+    --gold-glow: rgba(184, 134, 11, 0.25);
+    --gold-gradient: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #996515 100%);
+    --gold-subtle-grad: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+    --action: #b8860b;
+    --action-hover: #996515;
+    --action-glow: rgba(184, 134, 11, 0.3);
+    --bg-page: #f8f6f0;            /* Warm Soft Cream Canvas */
+    --bg-surface: #ffffff;         /* Crisp White Card */
+    --bg-surface-elevated: #ffffff;
+    --text-main: #1c1917;          /* Rich Charcoal Black */
+    --text-gold: #b8860b;          /* High contrast Gold text */
+    --text-muted: #6b7280;
+    --border: rgba(184, 134, 11, 0.25);
+    --border-hover: rgba(184, 134, 11, 0.6);
     --white: #ffffff;
-    --radius: 12px;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --radius: 16px;
+    --shadow-sm: 0 4px 12px rgba(184, 134, 11, 0.08);
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 0 0 15px rgba(184, 134, 11, 0.1);
+    --shadow-md: 0 18px 36px rgba(0, 0, 0, 0.1), 0 0 25px rgba(184, 134, 11, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-border: rgba(184, 134, 11, 0.3);
+}
+
+/* Night Mode (Dark Obsidian Royal Gold Theme) */
+body.dark-mode, body.dark-mode * {
+    --bg-page: #08080c;
+    --bg-surface: #101016;
+    --bg-surface-elevated: #181822;
+    --text-main: #f8f6f0;
+    --text-gold: #f5d061;
+    --text-muted: #9e9685;
+    --border: rgba(245, 208, 97, 0.3);
+    --glass-bg: rgba(16, 16, 22, 0.92);
+}
+
+body.dark-mode {
+    background-color: #08080c !important;
+    color: #f8f6f0 !important;
+}
+
+body {
+    background-color: var(--bg-page) !important;
+    color: var(--text-main) !important;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Redefine card bg to work with variables */
+.card, .review-card, .list-group-item {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+
+input, textarea, select {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-muted) !important;
 }
 
 /* ===== GLOBAL STYLES ===== */
 
 body {
     padding-top: 80px;
-    font-family: 'Inter', 'Google Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-page);
     color: var(--text-main);
-    line-height: 1.6;
+    line-height: 1.65;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .display-1, .display-2, .display-3, .display-4, .navbar-brand {
+    font-family: 'Cinzel', serif !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.text-dark {
+    color: var(--text-main) !important;
+}
+
+.bg-dark {
+    background-color: var(--glass-bg) !important;
 }
 
 main {
@@ -56,29 +106,35 @@ a {
 /* ===== NAVBAR ===== */
 
 .navbar {
-    background-color: var(--primary) !important;
-    padding: 0.75rem 0;
-    box-shadow: var(--shadow);
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
     z-index: 1050;
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--white) !important;
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: -0.025em;
 }
 
 .nav-link {
-    color: #cbd5e1 !important;
+    color: var(--text-main) !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
-    border-radius: 6px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: var(--white) !important;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary) !important;
+    background-color: rgba(212, 175, 55, 0.1);
 }
 
 /* ===== CARDS & LISTINGS ===== */
@@ -87,16 +143,18 @@ a {
     height: 100%;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    background-color: var(--bg-surface);
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
 }
 
 .listing-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-10px) scale(1.02);
     box-shadow: var(--shadow-md);
     border-color: var(--action);
 }
@@ -113,11 +171,11 @@ a {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .listing-card:hover .card-img-top {
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(1deg);
 }
 
 .card-body {
@@ -145,33 +203,51 @@ a {
 /* ===== BUTTONS ===== */
 
 .btn {
-    padding: 0.6rem 1.25rem;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    padding: 0.75rem 1.75rem;
+    font-weight: 700;
+    border-radius: 50px; /* rounded pills for modern feel */
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.03em;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.btn:active {
+    transform: scale(0.95) translateY(1px) !important;
+    box-shadow: 0 2px 8px var(--action-glow) !important;
+}
+
+.listing-card:active {
+    transform: scale(0.97) translateY(-2px) !important;
+    transition: transform 0.1s ease !important;
 }
 
 .btn-primary {
-    background-color: var(--action);
-    border-color: var(--action);
-    color: var(--white);
+    background: var(--gold-gradient);
+    border: none;
+    color: #0a0a0c !important;
+    box-shadow: 0 4px 15px var(--action-glow);
 }
 
 .btn-primary:hover {
-    background-color: var(--action-hover);
-    border-color: var(--action-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 25px var(--gold-glow);
+    color: #000000 !important;
+    filter: brightness(1.1);
 }
 
 .btn-outline-primary {
-    border-color: var(--action);
-    color: var(--action);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
 }
 
 .btn-outline-primary:hover {
-    background-color: var(--action);
-    color: var(--white);
+    background: var(--gold-gradient);
+    border-color: transparent;
+    color: #0a0a0c !important;
+    box-shadow: 0 4px 15px var(--gold-glow);
 }
 
 .btn-danger {
@@ -186,25 +262,56 @@ a {
     color: #fff;
 }
 
-/* ===== SHOW PAGE SPECIFIC ===== */
-
 .show-page-card {
-    border: none;
-    box-shadow: var(--shadow-md) !important;
+    border: 1px solid var(--glass-border);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 16px 32px 0 rgba(15, 23, 42, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.6) !important;
+    border-radius: 20px;
+    padding: 0.5rem;
+    position: relative;
+}
+
+.show-page-image-container {
     border-radius: 16px;
     overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .show-page-image {
-    height: 450px;
+    height: 480px;
     object-fit: cover;
     width: 100%;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.show-page-image-container:hover .show-page-image {
+    transform: scale(1.05);
+}
+
+.premium-title {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--action) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .show-page-list .list-group-item {
-    border-color: var(--border);
-    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    padding: 1.5rem 0.5rem;
     background-color: transparent;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+}
+
+.show-page-list .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 /* ===== REVIEWS SECTION ===== */
@@ -355,3 +462,32 @@ a {
         text-align: center;
     }
 }
+
+/* ===== DARK MODE & VISIBILITY BADGES ===== */
+body.dark-mode .dropdown-menu {
+    background-color: var(--bg-surface-elevated) !important;
+    border-color: var(--border) !important;
+}
+body.dark-mode .dropdown-item {
+    color: var(--text-main) !important;
+}
+body.dark-mode .dropdown-item:hover {
+    background-color: rgba(212, 175, 55, 0.15) !important;
+    color: var(--text-gold) !important;
+}
+body.dark-mode .modal-content {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+body.dark-mode .table {
+    color: var(--text-main) !important;
+}
+.badge-hidden {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+.badge-visible {
+    background-color: #198754;
+    color: #ffffff;
+}

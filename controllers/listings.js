@@ -1,7 +1,7 @@
 const Listing = require("../models/listing");
 
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({}).sort({ createdAt: -1 });
+    const allListings = await Listing.find({ isHidden: { $ne: true } }).populate("owner").sort({ createdAt: -1 });
     res.render("listings/index", { allListings });
 };
 
@@ -24,8 +24,18 @@ module.exports.showListing = async (req, res) => {
         req.flash("error", "The listing you are looking for does not exist!");
         return res.redirect("/listings");
     }
+
+    if (listing.isHidden) {
+        const isOwnerOrAdmin = req.user && (listing.owner._id.equals(req.user._id) || req.user.role === 'Admin' || req.user.isAdmin);
+        if (!isOwnerOrAdmin) {
+            req.flash("error", "This listing is currently hidden by the owner.");
+            return res.redirect("/listings");
+        }
+    }
+
     res.render("listings/show", { listing });
 };
+
 
 module.exports.createListing = async (req, res) => {
     const listingData = req.body.listing;
@@ -122,3 +132,41 @@ module.exports.destroyListing = async (req, res) => {
     req.flash("success", "Listing deleted!");
     res.redirect("/listings");
 };
+
+module.exports.toggleWishlist = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const User = require("../models/user");
+        const user = await User.findById(req.user._id);
+        
+        const listingIndex = user.savedListings.indexOf(id);
+        let saved = false;
+        
+        if (listingIndex === -1) {
+            user.savedListings.push(id);
+            saved = true;
+        } else {
+            user.savedListings.splice(listingIndex, 1);
+            saved = false;
+        }
+        
+        await user.save();
+        res.json({ success: true, saved });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+};
+
+module.exports.toggleVisibility = async (req, res) => {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listings");
+    }
+    listing.isHidden = !listing.isHidden;
+    await listing.save();
+    req.flash("success", listing.isHidden ? "Listing is now hidden from public view." : "Listing is now published and visible to public!");
+    res.redirect(req.headers.referer || `/listings/${id}`);
+};
+

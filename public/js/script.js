@@ -91,6 +91,76 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 150);
         });
     });
+
+    // Dark/Light Mode Theme Toggle
+    const themeToggler = document.getElementById('themeToggler');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    // Check local storage for theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) {
+            themeIcon.className = 'fas fa-sun';
+        }
+    }
+    
+    if (themeToggler) {
+        themeToggler.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            if (themeIcon) {
+                if (isDark) {
+                    themeIcon.className = 'fas fa-sun';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                }
+            }
+        });
+    }
+
+    // Wishlist Toggle Ajax Functionality
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent card navigation
+            
+            const listingId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            
+            // Click animation scale bump
+            icon.style.transform = 'scale(1.4)';
+            setTimeout(() => {
+                icon.style.transform = '';
+            }, 200);
+
+            try {
+                const response = await fetch(`/listings/${listingId}/wishlist`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.status === 401 || response.redirected) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    if (data.saved) {
+                        icon.className = 'fas fa-heart text-danger';
+                    } else {
+                        icon.className = 'far fa-heart text-muted';
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to toggle wishlist:', err);
+                window.location.href = '/login';
+            }
+        });
+    });
 });
 
 

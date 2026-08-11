@@ -1,0 +1,92 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-light">
+        <h2 class="fw-bold text-primary"><i class="fas fa-user-check me-2"></i>Owner Verification Portal</h2>
+        <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">
+            <%= verifications.length %> Total Requests
+        </span>
+    </div>
+
+    <% if (verifications.length === 0) { %>
+        <div class="alert alert-info text-center py-5 rounded-4 shadow-sm border-0">
+            <i class="fas fa-folder-open fa-3x mb-3 text-secondary"></i>
+            <h4 class="fw-bold">No Verification Requests Found</h4>
+            <p class="text-muted mb-0">All submitted verification requests have been processed.</p>
+        </div>
+    <% } else { %>
+        <div class="row g-4">
+            <% verifications.forEach(req => { %>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
+                        <!-- Status Ribbon Badge -->
+                        <span class="position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 
+                            <%= req.status === 'Approved' ? 'bg-success' : 
+                                req.status === 'Rejected' ? 'bg-danger' : 
+                                'bg-warning text-dark' %>">
+                            <%= req.status %>
+                        </span>
+
+                        <div class="card-body p-4 pt-5">
+                            <h5 class="card-title fw-bold text-dark mb-1"><%= req.fullName %></h5>
+                            <p class="text-muted small mb-3">@<%= req.user ? req.user.username : 'Deleted User' %> • Phone: <%= req.phone %></p>
+                            
+                            <hr class="my-3 text-muted">
+                            
+                            <div class="mb-3">
+                                <label class="fw-semibold text-secondary small uppercase mb-1">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Property Address
+                                </label>
+                                <p class="mb-0 text-dark small bg-light p-2.5 rounded-3 border-start border-primary border-3" style="font-size: 0.9rem; line-height: 1.4;">
+                                    <%= req.propertyAddress %>
+                                </p>
+                            </div>
+
+                            <% if (req.remarks) { %>
+                                <div class="mb-3">
+                                    <label class="fw-semibold text-secondary small uppercase mb-1">
+                                        <i class="fas fa-comment-dots me-1"></i>Remarks
+                                    </label>
+                                    <p class="mb-0 text-muted small italic p-2 bg-light rounded-3">
+                                        "<%= req.remarks %>"
+                                    </p>
+                                </div>
+                            <% } %>
+
+                            <% if (req.status === 'Pending') { %>
+                                <div class="mt-4 pt-2 border-top border-light">
+                                    <form action="/admin/verifications/<%= req._id %>/approve" method="POST" class="d-inline-block w-100 mb-2">
+                                        <button type="submit" class="btn btn-success w-100 rounded-pill py-2 shadow-sm">
+                                            <i class="fas fa-check me-2"></i>Approve Owner
+                                        </button>
+                                    </form>
+
+                                    <!-- Rejection Form -->
+                                    <button class="btn btn-outline-danger w-100 rounded-pill py-2" type="button" data-bs-toggle="collapse" data-bs-target="#rejectCollapse-<%= req._id %>" aria-expanded="false" aria-controls="rejectCollapse-<%= req._id %>">
+                                        <i class="fas fa-times me-2"></i>Reject...
+                                    </button>
+
+                                    <div class="collapse mt-2" id="rejectCollapse-<%= req._id %>">
+                                        <form action="/admin/verifications/<%= req._id %>/reject" method="POST" class="card card-body bg-light border-0 p-3 rounded-3 shadow-inner">
+                                            <div class="mb-2">
+                                                <label for="remarks-<%= req._id %>" class="form-label small fw-semibold">Rejection Reason:</label>
+                                                <textarea class="form-control form-control-sm" id="remarks-<%= req._id %>" name="remarks" rows="2" placeholder="e.g. Invalid document number / fake address" required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-danger btn-sm w-100 rounded-pill">
+                                                Confirm Rejection
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                        
+                        <div class="card-footer bg-light border-0 py-3 text-center text-muted small">
+                            Submitted: <%= new Date(req.createdAt).toLocaleDateString() %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
