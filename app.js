@@ -1,3 +1,4 @@
+
 if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
 }
@@ -44,11 +45,15 @@ const localDbUrl = "mongodb://127.0.0.1:27017/UniRooms";
 
 async function seedAdminAccount() {
     try {
-        const adminExists = await User.findOne({ username: "adminhost" });
-        if (!adminExists) {
-            const adminUser = new User({
-                username: "adminhost",
-                email: "admin@unirooms.com",
+        const adminUsername = process.env.ADMIN_USERNAME || "adminhost";
+        const adminPassword = process.env.ADMIN_PASSWORD || "AdminHostPassword123";
+        const adminEmail = process.env.ADMIN_EMAIL || "admin@unirooms.com";
+
+        let adminUser = await User.findOne({ username: adminUsername });
+        if (!adminUser) {
+            adminUser = new User({
+                username: adminUsername,
+                email: adminEmail,
                 fullname: "UniRooms Admin Host",
                 role: "Admin",
                 isAdmin: true,
@@ -56,13 +61,16 @@ async function seedAdminAccount() {
                 phoneNumber: "9999999999",
                 address: "UniRooms HQ"
             });
-            await User.register(adminUser, "AdminHostPassword123");
-            console.log("--> Admin Host Account Seeded Successfully!");
+            await User.register(adminUser, adminPassword);
+            console.log(`--> Admin Host Account ('${adminUsername}') Seeded Successfully!`);
         } else {
-            adminExists.role = "Admin";
-            adminExists.isAdmin = true;
-            adminExists.isVerifiedOwner = true;
-            await adminExists.save();
+            adminUser.role = "Admin";
+            adminUser.isAdmin = true;
+            adminUser.isVerifiedOwner = true;
+            if (process.env.ADMIN_PASSWORD) {
+                await adminUser.setPassword(process.env.ADMIN_PASSWORD);
+            }
+            await adminUser.save();
         }
     } catch (e) {
         console.error("Error seeding Admin Host account:", e.message);
