@@ -1,183 +1,94 @@
 const sampleListings = [
   {
-    title: "Cozy Beachfront Cottage",
-    description: "Relaxing beachfront stay with ocean views.",
-    image: "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b",
-    price: 1500,
-    location: "Malibu",
-    country: "United States",
-    contact: 9876543210
-  },
-  {
-    title: "Modern Studio Apartment",
-    description: "Studio apartment ideal for students near market.",
-    image: "https://imhttps://media.designcafe.com/wp-content/uploads/2023/07/05141651/aesthetic-room-decor-with-light-fixtures.jpgages.unsplash.com/photo-1560448070",
-    price: 800,
-    location: "Pune",
-    country: "India",
-    contact: 9090909090
-  },
-  {
-    title: "Luxury Villa with Pool",
-    description: "Spacious villa with private pool and greenery.",
-    image: "https://media.istockphoto.com/id/1938106570/photo/digitally-generated-domestic-bedroom-interior.jpg?s=612x612&w=0&k=20&c=bC_YWy11iWh0ZtHJIT5ia4v9QELdl94SVqDge9XNZcc",
-    price: 3500,
-    location: "Dubai",
-    country: "UAE",
-    contact: 9123456789
-  },
-  {
-    title: "Budget Hostel Room",
-    description: "Affordable hostel accommodation for students.",
-    image: "https://images.unsplash.com/photo-1505691723518",
-    price: 400,
-    location: "Delhi",
-    country: "India",
-    contact: 8887776666
-  },
-  {
-    title: "City Center Flat",
-    description: "2BHK flat near metro station and shopping center.",
-    image: "https://images.unsplash.com/photo-1512917774080",
-    price: 2000,
-    location: "Mumbai",
-    country: "India",
-    contact: 9012345678
-  },
-  {
-    title: "Quiet Suburban Home",
-    description: "Perfect for students wanting a peaceful stay.",
-    image: "https://images.unsplash.com/photo-1560185127-6d8bdb7f7b12",
+    title: "Eco Friendly Bamboo Stay",
+    description: "Unique bamboo structure with modern sustainable amenities.",
+    images: ["https://images.unsplash.com/photo-1596394516093-501ba68a0ba6"],
     price: 1200,
-    location: "Bengaluru",
-    country: "India",
-    contact: 9765432109
+    location: "Bali",
+    country: "Indonesia",
+    contact: "9876543210"
   },
   {
-    title: "Shared Boys Hostel",
-    description: "Shared rooms with meals and WiFi.",
-    image: "https://images.unsplash.com/photo-1586105251261-72a756497a12",
-    price: 550,
-    location: "Jaipur",
-    country: "India",
-    contact: 9823456712
+    title: "Penthouse with Sky View",
+    description: "Experience luxury at new heights with floor to ceiling windows.",
+    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750"],
+    price: 5000,
+    location: "New York",
+    country: "USA",
+    contact: "9090909090"
   },
   {
-    title: "Girls PG Accommodation",
-    description: "Safe PG with security and home-cooked meals.",
-    image: "https://images.unsplash.com/photo-1580584126903-7c7d8995cd21",
-    price: 650,
-    location: "Chennai",
-    country: "India",
-    contact: 9856743210
+    title: "Rustic Forest Cabin",
+    description: "Get away from the noise in this cozy wooden cabin.",
+    images: ["https://images.unsplash.com/photo-1449156006003-92c949bc226b"],
+    price: 1800,
+    location: "Sapa",
+    country: "Vietnam",
+    contact: "9123456789"
   },
   {
-    title: "Modern Apartment Near College",
-    description: "Walking distance to university campus.",
-    image: "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1",
+    title: "Mid-Century Modern Loft",
+    description: "Chic design meets urban living in this spacious loft.",
+    images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688"],
+    price: 2500,
+    location: "Berlin",
+    country: "Germany",
+    contact: "8887776666"
+  },
+  {
+    title: "Mediterranean Seafront Villa",
+    description: "Wake up to the sound of waves in this stunning blue and white villa.",
+    images: ["https://images.unsplash.com/photo-1510798831971-661eb04b3739"],
+    price: 3800,
+    location: "Santorini",
+    country: "Greece",
+    contact: "9012345678"
+  },
+  {
+    title: "Japanese Garden Studio",
+    description: "Peaceful studio overlooking a traditional Zen garden.",
+    images: ["https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d"],
+    price: 1400,
+    location: "Kyoto",
+    country: "Japan",
+    contact: "9765432109"
+  },
+  {
+    title: "Industrial Style Bachelor Pad",
+    description: "Exposed brick and metal accents in a prime downtown location.",
+    images: ["https://images.unsplash.com/photo-1554995207-c18c203602cb"],
+    price: 2200,
+    location: "London",
+    country: "UK",
+    contact: "9823456712"
+  },
+  {
+    title: "Scandinavian Minimalist Room",
+    description: "Bright, airy and perfectly simple for the modern traveler.",
+    images: ["https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e"],
     price: 900,
-    location: "Hyderabad",
-    country: "India",
-    contact: 9845612378
+    location: "Stockholm",
+    country: "Sweden",
+    contact: "9856743210"
   },
   {
-    title: "Countryside Stay",
-    description: "Fresh environment perfect for study relaxation.",
-    image: "https://images.unsplash.com/photo-1600585154206-1c0e4e41a280",
-    price: 700,
-    location: "Nashik",
-    country: "India",
-    contact: 9975643210
+    title: "Mountain View Chalet",
+    description: "The perfect spot for winter sports enthusiasts.",
+    images: ["https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1"],
+    price: 3200,
+    location: "Aspin",
+    country: "USA",
+    contact: "9845612378"
   },
   {
-    title: "Premium Private PG",
-    description: "Fully furnished room with AC and cleaning.",
-    image: "https://images.unsplash.com/photo-1554995207-c18c203602cb",
-    price: 1100,
-    location: "Ahmedabad",
-    country: "India",
-    contact: 9988776655
-  },
-  {
-    title: "Student Dormitory",
-    description: "Budget option with shared facilities.",
-    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-    price: 350,
-    location: "Kolkata",
-    country: "India",
-    contact: 9871203456
-  },
-  {
-    title: "Compact Single Room",
-    description: "Private room ideal for introverted students.",
-    image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
-    price: 600,
-    location: "Surat",
-    country: "India",
-    contact: 9734512380
-  },
-  {
-    title: "Hillside Hostel",
-    description: "Rooms with scenic mountain views.",
-    image: "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8",
-    price: 500,
-    location: "Ooty",
-    country: "India",
-    contact: 9823421987
-  },
-  {
-    title: "Tech Park PG",
-    description: "Close to IT companies and cafes.",
-    image: "https://images.unsplash.com/photo-1549187774-b4e9b0445b06",
-    price: 950,
-    location: "Noida",
-    country: "India",
-    contact: 9012873456
-  },
-  {
-    title: "Private Room in Hostel",
-    description: "Private room with shared kitchen.",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
-    price: 750,
-    location: "Indore",
-    country: "India",
-    contact: 9134567812
-  },
-  {
-    title: "Off-Campus Student Flat",
-    description: "Fully furnished, peaceful stay.",
-    image: "https://images.unsplash.com/photo-1585421514738-206e3f91e197",
-    price: 1050,
-    location: "Goa",
-    country: "India",
-    contact: 9985624710
-  },
-  {
-    title: "Affordable PG",
-    description: "Low cost PG with all basic facilities.",
-    image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd8",
-    price: 450,
-    location: "Nagpur",
-    country: "India",
-    contact: 9823625478
-  },
-  {
-    title: "City View Rooftop Flat",
-    description: "Enjoy skyline view from your room.",
-    image: "https://images.unsplash.com/photo-1553524818-2f9b6bfa3bd8",
-    price: 1600,
-    location: "Gurugram",
-    country: "India",
-    contact: 9745213678
-  },
-  {
-    title: "Peaceful Student PG",
-    description: "Calm environment for serious study.",
-    image: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c",
-    price: 700,
-    location: "Vadodara",
-    country: "India",
-    contact: 9865742310
+    title: "Designer Boutique Apartment",
+    description: "Every corner of this room is an aesthetic delight.",
+    images: ["https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af"],
+    price: 2800,
+    location: "Paris",
+    country: "France",
+    contact: "9975643210"
   }
 ];
+
 module.exports = { data: sampleListings };

@@ -2,22 +2,128 @@
 
     <div class="card shadow-lg mx-auto show-page-card" style="max-width: 800px;">
 
-        <!-- Image -->
-        <img src="<%= listing.image %>" class="card-img-top show-page-image" alt="<%= listing.title %>"
-            onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+        <!-- Image Carousel -->
+        <div class="show-page-image-container position-relative">
+            <!-- Wishlist Heart Button -->
+            <button class="btn btn-link position-absolute top-0 start-0 m-3 p-0 bg-white bg-opacity-75 rounded-circle shadow d-flex align-items-center justify-content-center wishlist-btn" 
+                    type="button" 
+                    data-id="<%= listing._id %>" 
+                    style="z-index: 10; width: 44px; height: 44px;"
+                    title="Save Room">
+                <i class="<%= (currUser && currUser.savedListings && currUser.savedListings.includes(listing._id.toString())) ? 'fas fa-heart text-danger' : 'far fa-heart text-muted' %>" style="font-size: 1.3rem; transition: transform 0.2s ease;"></i>
+            </button>
+
+            <div id="listingCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000"
+                data-bs-pause="hover">
+                <!-- Indicators/Dots if more than 1 image -->
+                <% if(listing.images && listing.images.length> 1) { %>
+                    <div class="carousel-indicators">
+                        <% listing.images.forEach((_, idx)=> { %>
+                            <button type="button" data-bs-target="#listingCarousel" data-bs-slide-to="<%= idx %>"
+                                class="<%= idx === 0 ? 'active' : '' %>"
+                                aria-current="<%= idx === 0 ? 'true' : 'false' %>"></button>
+                            <% }) %>
+                    </div>
+                    <% } %>
+
+                        <div class="carousel-inner rounded-top">
+                            <% if(listing.images && listing.images.length> 0) { %>
+                                <% listing.images.forEach((img, index)=> { %>
+                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                        <img src="<%= img %>" class="d-block w-100 show-page-image"
+                                            alt="<%= listing.title %>" style="height: 480px; object-fit: cover;"
+                                            onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+
+                                        <!-- Controls Overlay -->
+                                        <div class="position-absolute bottom-0 start-0 m-3 d-flex gap-2">
+                                            <!-- Play/Pause Toggle (Dynamic Option) -->
+                                            <button class="btn btn-dark btn-sm bg-opacity-75 border-0" id="carouselToggle"
+                                                title="Toggle Auto-play">
+                                                <i class="fas fa-pause" id="toggleIcon"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Image Counter Badge -->
+                                        <div class="position-absolute bottom-0 end-0 m-3">
+                                            <span class="badge bg-dark bg-opacity-75 shadow-sm">
+                                                <i class="fas fa-camera me-1"></i>
+                                                <%= index + 1 %> / <%= listing.images.length %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="carousel-item active">
+                                                <img src="/images/default.jpeg" class="d-block w-100 show-page-image"
+                                                    alt="Default Image" style="height: 480px; object-fit: cover;">
+                                            </div>
+                                            <% } %>
+                        </div>
+
+                        <!-- Controls -->
+                        <% if(listing.images && listing.images.length> 1) { %>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            <% } %>
+            </div>
+        </div>
+
+        <script>
+            // Dynamic Carousel Control (Manual vs Auto)
+            const carouselToggle = document.getElementById('carouselToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const myCarousel = document.querySelector('#listingCarousel');
+            const carousel = new bootstrap.Carousel(myCarousel);
+            let isPaused = false;
+
+            if (carouselToggle) {
+                carouselToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (isPaused) {
+                        carousel.cycle();
+                        toggleIcon.classList.replace('fa-play', 'fa-pause');
+                        carouselToggle.classList.replace('btn-primary', 'btn-dark');
+                    } else {
+                        carousel.pause();
+                        toggleIcon.classList.replace('fa-pause', 'fa-play');
+                        carouselToggle.classList.replace('btn-dark', 'btn-primary');
+                    }
+                    isPaused = !isPaused;
+                });
+            }
+        </script>
 
         <div class="card-body">
-            <h3 class="card-title mb-2">
-                <%= listing.title %>
+            <h3 class="card-title mb-1 premium-title d-flex align-items-center flex-wrap gap-2">
+                <span><%= listing.title %></span>
+                <% if (listing.isHidden) { %>
+                    <span class="badge badge-hidden text-wrap" style="font-size: 0.75rem;" data-i18n="listingHiddenBadge"><i class="fas fa-eye-slash me-1"></i>Hidden</span>
+                <% } else { %>
+                    <span class="badge badge-visible text-wrap" style="font-size: 0.75rem;" data-i18n="listingVisibleBadge"><i class="fas fa-eye me-1"></i>Visible</span>
+                <% } %>
             </h3>
+            <p class="text-muted small mb-3">
+                Published by: <strong class="text-dark"><%= listing.owner ? listing.owner.fullname : 'Anonymous' %></strong>
+                <% if(listing.owner && listing.owner.isVerifiedOwner) { %>
+                    <span class="badge bg-success rounded-pill ms-2 px-2 py-0.5" style="font-size: 0.75rem;">
+                        <i class="fas fa-check-circle me-1"></i>Verified Owner
+                    </span>
+                <% } %>
+            </p>
 
             <!-- Average Rating Display -->
             <% if (listing.reviews && listing.reviews.length> 0) { %>
-                <div class="mb-3">
-                    <span class="badge bg-warning text-dark me-2">
-                        <i class="fas fa-star"></i>
-                        <%= listing.averageRating %>
-                    </span>
+                <div class="mb-3 d-flex align-items-center">
+                    <p class="starability-result mb-0 me-2" data-rating="<%= Math.round(listing.averageRating) %>">
+                    </p>
                     <small class="text-muted">(<%= listing.reviews.length %>
                             <%= listing.reviews.length===1 ? 'review' : 'reviews' %>)</small>
                 </div>
@@ -42,7 +148,9 @@
                             <li class="list-group-item">
                                 <strong><i class="fas fa-map-marker-alt me-2 text-primary"></i>Location:</strong>
                                 <span class="float-end">
-                                    <%= listing.location %>
+                                    <a href="<%= listing.mapLink ? listing.mapLink : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(listing.location + ', ' + listing.city) %>" target="_blank" class="text-primary fw-medium" title="View on Google Maps">
+                                        <%= listing.location %>, <%= listing.city %> <i class="fas fa-external-link-alt ms-1" style="font-size: 0.8em;"></i>
+                                    </a>
                                 </span>
                             </li>
 
@@ -54,47 +162,98 @@
                             </li>
                         </ul>
 
+                        <!-- Interactive Leaflet Map -->
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+                        <div class="mt-4 mb-3">
+                            <h5 class="fw-bold mb-3 text-success">
+                                <i class="fas fa-map-marked-alt me-2"></i>Property Location
+                            </h5>
+                            <div id="leafletMap" style="height: 300px; width: 100%; border-radius: 12px; z-index: 1;" class="border shadow-sm mb-4"></div>
+                        </div>
+
+                        <!-- Dynamic Nearby Places -->
+                        <div class="mt-4 mb-3">
+                            <h5 class="fw-bold mb-3 text-success">
+                                <i class="fas fa-street-view me-2"></i>Nearby Places
+                            </h5>
+                            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
+                                <% 
+                                    const seed = ((listing.coordinates && listing.coordinates.length === 2) ? (listing.coordinates[0] + listing.coordinates[1]) : 91.95) * 1000;
+                                    const nearby = [
+                                        { name: "Sanjivani College", type: "Colleges", icon: "fa-graduation-cap", color: "bg-success text-white", dist: ((seed % 15) / 10 + 0.3).toFixed(1) + " km" },
+                                        { name: "City Care Hospital", type: "Hospitals", icon: "fa-hospital", color: "bg-danger text-white", dist: ((seed % 9) / 10 + 0.2).toFixed(1) + " km" },
+                                        { name: "Local Bus Terminal", type: "Bus Stops", icon: "fa-bus", color: "bg-info text-white", dist: ((seed % 6) * 100 + 150) + " m" },
+                                        { name: "Railway Station", type: "Railway Stations", icon: "fa-train", color: "bg-primary text-white", dist: ((seed % 13) / 10 + 1.2).toFixed(1) + " km" },
+                                        { name: "State Bank ATM", type: "ATMs", icon: "fa-credit-card", color: "bg-warning text-dark", dist: ((seed % 4) * 80 + 100) + " m" },
+                                        { name: "Uni Bistro", type: "Restaurants", icon: "fa-utensils", color: "bg-secondary text-white", dist: ((seed % 8) * 90 + 120) + " m" },
+                                        { name: "Apollo Pharmacy", type: "Medical Stores", icon: "fa-pills", color: "bg-danger text-white", dist: ((seed % 5) * 60 + 50) + " m" }
+                                    ];
+                                %>
+                                <% nearby.forEach(place => { %>
+                                    <div class="col">
+                                        <div class="card h-100 border-0 bg-light p-2.5 rounded-3 d-flex align-items-center text-center">
+                                            <div class="icon-circle <%= place.color %> mb-2" style="width: 36px; height: 36px; font-size: 0.95rem;">
+                                                <i class="fas <%= place.icon %>"></i>
+                                            </div>
+                                            <h6 class="mb-0 small fw-bold text-truncate w-100" style="font-size: 0.8rem;"><%= place.name %></h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;"><%= place.type %></small>
+                                            <span class="badge bg-white text-dark border mt-1 small" style="font-size: 0.7rem;"><%= place.dist %></span>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const lat = parseFloat("<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[1] : 19.0760 %>");
+                                const lng = parseFloat("<%= (listing.coordinates && listing.coordinates.length === 2) ? listing.coordinates[0] : 72.8777 %>");
+                                const map = L.map('leafletMap').setView([lat, lng], 15);
+                                
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    attribution: '&copy; OpenStreetMap contributors'
+                                }).addTo(map);
+                                
+                                L.marker([lat, lng]).addTo(map)
+                                    .bindPopup("<b><%= listing.title %></b><br><%= listing.location %>, <%= listing.city %>")
+                                    .openPopup();
+                            });
+                        </script>
+
                         <!-- Action Buttons -->
                         <div class="d-flex flex-column flex-md-row gap-2 mt-4">
                             <a href="/listings" class="btn btn-outline-secondary flex-fill">
                                 <i class="fas fa-arrow-left me-1"></i> Back to Listings
                             </a>
-                            <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning flex-fill">
-                                <i class="fas fa-edit me-1"></i> Edit
-                            </a>
-                            <button type="button" class="btn btn-danger flex-fill" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal">
-                                <i class="fas fa-trash me-1"></i> Delete
-                            </button>
+                            <% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+                                <form method="POST" action="/listings/<%= listing._id %>/toggle-visibility" class="d-inline flex-fill">
+                                    <button type="submit" class="btn <%= listing.isHidden ? 'btn-success' : 'btn-secondary' %> w-100">
+                                        <i class="fas <%= listing.isHidden ? 'fa-eye' : 'fa-eye-slash' %> me-1"></i>
+                                        <span data-i18n="<%= listing.isHidden ? 'unhideListing' : 'hideListing' %>"><%= listing.isHidden ? 'Unhide Listing' : 'Hide Listing' %></span>
+                                    </button>
+                                </form>
+                                <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning flex-fill">
+                                    <i class="fas fa-edit me-1"></i> <span data-i18n="edit">Edit</span>
+                                </a>
+                                <button type="button" class="btn btn-danger flex-fill" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash me-1"></i> <span data-i18n="delete">Delete</span>
+                                </button>
+                            <% } else if(currUser) { %>
+                                <button type="button" class="btn btn-primary flex-fill" data-bs-toggle="modal" data-bs-target="#visitModal">
+                                    <i class="far fa-calendar-plus me-1"></i> Request a Visit
+                                </button>
+                                <a href="/chat?userId=<%= listing.owner ? listing.owner._id : '' %>" class="btn btn-outline-primary flex-fill">
+                                    <i class="far fa-comments me-1"></i> Chat with Owner
+                                </a>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-primary flex-fill">
+                                    <i class="fas fa-sign-in-alt me-1"></i> Login to Request Visit
+                                </a>
+                            <% } %>
                         </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteModalLabel">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p>Are you sure you want to delete <strong>"<%= listing.title %>"</strong>?</p>
-                    <p class="text-muted small mb-0">This action cannot be undone.</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
-                        <button type="submit" class="btn btn-danger">Delete Listing</button>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -106,167 +265,281 @@
         </h4>
 
         <!-- Leave a Review -->
-        <div class="card review-form-card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-star me-2"></i>Leave a Review
-                </h5>
+        <!-- Leave a Review -->
+        <% if(currUser) { %>
+            <div class="card review-form-card mb-4 border-0 shadow-sm bg-light">
+                <div class="card-header bg-primary text-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i>Leave a Review
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation"
+                        novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Rating</label>
+                            <fieldset class="starability-slot">
+                                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1"
+                                    checked aria-label="No rating." />
+                                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                                <label for="first-rate1" title="Terrible">1 star</label>
+                                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                                <label for="first-rate2" title="Not good">2 stars</label>
+                                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                                <label for="first-rate3" title="Average">3 stars</label>
+                                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                                <label for="first-rate4" title="Very good">4 stars</label>
+                                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                                <label for="first-rate5" title="Amazing">5 stars</label>
+                            </fieldset>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Comment</label>
+                            <textarea class="form-control" name="review[comment]" rows="4" required
+                                placeholder="Tell others about your experience..."></textarea>
+                            <div class="invalid-feedback">Please provide a comment.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary px-4">Submit Review</button>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation" novalidate>
+            <% } else { %>
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i> Please <a href="/login" class="fw-bold">Login</a> to
+                    leave a
+                    review.
+                </div>
+                <% } %>
+                    <!-- End Leave a Review -->
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Rating</label>
-                        <select class="form-select" name="review[rating]" required>
-                            <option value="">Choose rating...</option>
-                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-                            <option value="4">⭐⭐⭐⭐ Very Good</option>
-                            <option value="3">⭐⭐⭐ Good</option>
-                            <option value="2">⭐⭐ Fair</option>
-                            <option value="1">⭐ Poor</option>
-                        </select>
-                        <div class="invalid-feedback">Please select a rating.</div>
+                    <!-- Display Reviews -->
+                    <% if (listing.reviews && listing.reviews.length> 0) { %>
+                        <div class="reviews-grid">
+                            <% listing.reviews.forEach(review=> { %>
+                                <div class="card review-card mb-3 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="review-author-avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                                        style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-user small"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold">
+                                                            <%= review.author ? review.author.username : 'Anonymous' %>
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            <i class="far fa-clock me-1"></i>
+                                                            <%= new Date(review.createdAt).toLocaleDateString('en-IN', {
+                                                                year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                        </small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-2">
+                                                    <p class="starability-result" data-rating="<%= review.rating %>">
+                                                    </p>
+                                                </div>
+
+                                                <p class="card-text text-secondary">
+                                                    <%= review.comment %>
+                                                </p>
+                                            </div>
+
+                                            <% if(currUser && review.author &&
+                                                review.author._id.toString()===currUser._id.toString()) { %>
+                                                <div class="ms-3">
+                                                    <button
+                                                        class="btn btn-sm btn-light text-primary me-1 rounded-circle"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editReviewModal-<%= review._id %>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-light text-danger rounded-circle"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteReviewModal-<%= review._id %>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Edit Review Modal -->
+                                <div class="modal fade" id="editReviewModal-<%= review._id %>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Review
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form
+                                                action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=PATCH"
+                                                method="POST">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">Rating</label>
+                                                        <fieldset class="starability-slot">
+                                                            <input type="radio" id="edit-no-rate-<%= review._id %>"
+                                                                class="input-no-rate" name="review[rating]" value="1"
+                                                                <%=review.rating===0 ? 'checked' : '' %> aria-label="No
+                                                            rating." />
+
+                                                            <input type="radio" id="edit-rate1-<%= review._id %>"
+                                                                name="review[rating]" value="1" <%=review.rating===1
+                                                                ? 'checked' : '' %> />
+                                                            <label for="edit-rate1-<%= review._id %>" title="Terrible">1
+                                                                star</label>
+
+                                                            <input type="radio" id="edit-rate2-<%= review._id %>"
+                                                                name="review[rating]" value="2" <%=review.rating===2
+                                                                ? 'checked' : '' %> />
+                                                            <label for="edit-rate2-<%= review._id %>" title="Not good">2
+                                                                stars</label>
+
+                                                            <input type="radio" id="edit-rate3-<%= review._id %>"
+                                                                name="review[rating]" value="3" <%=review.rating===3
+                                                                ? 'checked' : '' %> />
+                                                            <label for="edit-rate3-<%= review._id %>" title="Average">3
+                                                                stars</label>
+
+                                                            <input type="radio" id="edit-rate4-<%= review._id %>"
+                                                                name="review[rating]" value="4" <%=review.rating===4
+                                                                ? 'checked' : '' %> />
+                                                            <label for="edit-rate4-<%= review._id %>"
+                                                                title="Very good">4 stars</label>
+
+                                                            <input type="radio" id="edit-rate5-<%= review._id %>"
+                                                                name="review[rating]" value="5" <%=review.rating===5
+                                                                ? 'checked' : '' %> />
+                                                            <label for="edit-rate5-<%= review._id %>" title="Amazing">5
+                                                                stars</label>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">Comment</label>
+                                                        <textarea class="form-control" name="review[comment]" rows="4"
+                                                            required><%= review.comment %></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save
+                                                        Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Review Modal -->
+                                <div class="modal fade" id="deleteReviewModal-<%= review._id %>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title"><i
+                                                        class="fas fa-exclamation-triangle me-2"></i>Delete
+                                                    Review</h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete this review? This action cannot
+                                                    be
+                                                    undone.
+                                                </p>
+                                                <div class="alert alert-warning">
+                                                    <strong>Rating:</strong>
+                                                    <%= review.rating %>/5<br>
+                                                        <strong>Comment:</strong> "<%= review.comment.substring(0, 100)
+                                                            %>
+                                                            <%= review.comment.length> 100 ? '...' : '' %>"
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <form
+                                                    action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+                                                    method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete
+                                                        Review</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <% } else { %>
+                            <div class="alert alert-info">
+                                No reviews yet. Be the first to review this listing!
+                            </div>
+                            <% } %>
+
+    </div>
+
+    <!-- Delete Listing Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Delete Listing</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the listing <strong><%= listing.title %></strong>? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="m-0">
+                        <button type="submit" class="btn btn-danger">Yes, delete it</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visit Request Modal -->
+    <div class="modal fade" id="visitModal" tabindex="-1" aria-labelledby="visitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header bg-gradient-primary text-white py-3 border-0">
+                    <h5 class="modal-title fw-bold" id="visitModalLabel">
+                        <i class="far fa-calendar-check me-2"></i>Schedule Visit Request
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/bookings" method="POST" class="needs-validation" novalidate>
+                    <input type="hidden" name="listingId" value="<%= listing._id %>">
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-4">Request a visit date and time. The property owner will review your request and either confirm or contact you.</p>
+                        
+                        <div class="mb-3">
+                            <label for="visitDate" class="form-label fw-semibold">Preferred Date & Time <span class="text-danger">*</span></label>
+                            <input type="datetime-local" id="visitDate" name="visitDate" class="form-control" required>
+                            <div class="invalid-feedback">Please choose a valid date and time.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label fw-semibold">Message/Remarks for Owner</label>
+                            <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="e.g. I am a first-year CSE student looking to visit the room this weekend."></textarea>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Comment</label>
-                        <textarea class="form-control" name="review[comment]" rows="4" required></textarea>
-                        <div class="invalid-feedback">Please provide a comment.</div>
+                    <div class="modal-footer p-3 border-0 bg-light rounded-bottom-4">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Submit Request</button>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Submit Review</button>
                 </form>
             </div>
         </div>
-
-        <!-- Display Reviews -->
-        <% if (listing.reviews && listing.reviews.length> 0) { %>
-            <div class="reviews-grid">
-                <% listing.reviews.forEach(review=> { %>
-                    <div class="card review-card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <div class="mb-2">
-                                        <% for (let i=1; i <=5; i++) { %>
-                                            <% if (i <=review.rating) { %>
-                                                <i class="fas fa-star text-warning"></i>
-                                                <% } else { %>
-                                                    <i class="far fa-star text-muted"></i>
-                                                    <% } %>
-                                                        <% } %>
-                                                            <span class="ms-2 text-muted">(<%= review.rating %>
-                                                                    /5)</span>
-                                    </div>
-
-                                    <p class="mb-2">
-                                        <%= review.comment %>
-                                    </p>
-
-                                    <small class="text-muted">
-                                        <i class="far fa-clock me-1"></i>
-                                        <%= new Date(review.createdAt).toLocaleDateString('en-IN', { year: 'numeric' ,
-                                            month: 'long' , day: 'numeric' }) %>
-                                    </small>
-                                </div>
-
-                                <div class="ms-3">
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                        data-bs-target="#editReviewModal-<%= review._id %>">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteReviewModal-<%= review._id %>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Edit Review Modal -->
-                    <div class="modal fade" id="editReviewModal-<%= review._id %>" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Review</h5>
-                                    <button type="button" class="btn-close btn-close-white"
-                                        data-bs-dismiss="modal"></button>
-                                </div>
-                                <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=PATCH"
-                                    method="POST">
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold">Rating</label>
-                                            <select class="form-select" name="review[rating]" required>
-                                                <option value="5" <%=review.rating===5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐
-                                                    Excellent</option>
-                                                <option value="4" <%=review.rating===4 ? 'selected' : '' %>>⭐⭐⭐⭐
-                                                    Very
-                                                    Good</option>
-                                                <option value="3" <%=review.rating===3 ? 'selected' : '' %>>⭐⭐⭐ Good
-                                                </option>
-                                                <option value="2" <%=review.rating===2 ? 'selected' : '' %>>⭐⭐ Fair
-                                                </option>
-                                                <option value="1" <%=review.rating===1 ? 'selected' : '' %>>⭐ Poor
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold">Comment</label>
-                                            <textarea class="form-control" name="review[comment]" rows="4"
-                                                required><%= review.comment %></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Delete Review Modal -->
-                    <div class="modal fade" id="deleteReviewModal-<%= review._id %>" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Delete
-                                        Review</h5>
-                                    <button type="button" class="btn-close btn-close-white"
-                                        data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to delete this review? This action cannot be undone.
-                                    </p>
-                                    <div class="alert alert-warning">
-                                        <strong>Rating:</strong>
-                                        <%= review.rating %>/5<br>
-                                            <strong>Comment:</strong> "<%= review.comment.substring(0, 100) %>
-                                                <%= review.comment.length> 100 ? '...' : '' %>"
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Cancel</button>
-                                    <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
-                                        method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-danger">Delete Review</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-            </div>
-            <% } else { %>
-                <div class="alert alert-info">
-                    No reviews yet. Be the first to review this listing!
-                </div>
-                <% } %>
-
     </div>
 
     <!-- Bootstrap Validation -->

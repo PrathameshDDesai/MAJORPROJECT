@@ -1,0 +1,157 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5 animate__animated animate__fadeIn">
+    <!-- Header Summary Card -->
+    <div class="card border-0 shadow-sm bg-gradient-primary text-white rounded-4 p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                    <i class="fas fa-graduation-cap fa-2x"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h2 class="mb-0 fw-bold">Welcome back, <%= currUser.fullname %>!</h2>
+                <p class="mb-0 text-white-50">Student/Tenant Portal • Manage your favorite rooms and scheduled visits</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills nav-fill mb-4 border p-2 rounded-pill bg-white shadow-sm" id="tenantDashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-bold" id="visits-tab" data-bs-toggle="pill" data-bs-target="#visits" type="button" role="tab" aria-controls="visits" aria-selected="true">
+                <i class="far fa-calendar-check me-2"></i>Scheduled Visits
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold" id="wishlist-tab" data-bs-toggle="pill" data-bs-target="#wishlist" type="button" role="tab" aria-controls="wishlist" aria-selected="false">
+                <i class="far fa-heart me-2"></i>My Wishlist (<%= savedListings.length %>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link rounded-pill fw-bold text-dark" href="/chat">
+                <i class="far fa-comments me-2 text-primary"></i>My Messages
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="tenantDashboardTabContent">
+        
+        <!-- Visits Tab -->
+        <div class="tab-pane fade show active" id="visits" role="tabpanel" aria-labelledby="visits-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h4 class="fw-bold mb-4"><i class="fas fa-history me-2 text-primary"></i>Visit Requests & Bookings</h4>
+                
+                <% if (bookings.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="far fa-calendar fa-3x text-muted mb-3"></i>
+                        <h5 class="fw-semibold">No visits requested yet</h5>
+                        <p class="text-muted mb-4">Request a visit on any accommodation detail page to schedule a viewing.</p>
+                        <a href="/listings" class="btn btn-primary rounded-pill px-4">Browse Accommodations</a>
+                    </div>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover border-light">
+                            <thead class="table-light text-muted uppercase small fw-bold">
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Owner</th>
+                                    <th>Scheduled Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Your Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% bookings.forEach(booking => { %>
+                                    <tr>
+                                        <td>
+                                            <% if (booking.listing) { %>
+                                                <a href="/listings/<%= booking.listing._id %>" class="fw-bold text-dark text-decoration-none">
+                                                    <%= booking.listing.title %>
+                                                </a>
+                                                <small class="text-muted d-block"><%= booking.listing.location %>, <%= booking.listing.city %></small>
+                                            <% } else { %>
+                                                <span class="text-muted italic">Deleted listing</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <span class="fw-medium"><%= booking.owner ? booking.owner.fullname : 'N/A' %></span>
+                                            <small class="text-muted d-block">Owner</small>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-primary">
+                                                <%= new Date(booking.visitDate).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill px-3 py-1.5 
+                                                <%= booking.status === 'Accepted' ? 'bg-success text-white' : 
+                                                    booking.status === 'Rejected' ? 'bg-danger text-white' : 
+                                                    booking.status === 'Completed' ? 'bg-secondary text-white' : 
+                                                    'bg-warning text-dark' %>">
+                                                <%= booking.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <p class="mb-0 text-muted small"><%= booking.remarks || 'No remarks provided.' %></p>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Wishlist Tab -->
+        <div class="tab-pane fade" id="wishlist" role="tabpanel" aria-labelledby="wishlist-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-heart me-2 text-danger"></i>Saved Accommodations</h4>
+                    <a href="/wishlist" class="btn btn-outline-primary btn-sm rounded-pill px-3">View Full Wishlist</a>
+                </div>
+
+                <% if (savedListings.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="far fa-heart fa-3x text-muted mb-3"></i>
+                        <h5 class="fw-semibold text-dark">Your wishlist is empty</h5>
+                        <p class="text-muted mb-0">Browse rooms and click the heart icons to save them here.</p>
+                    </div>
+                <% } else { %>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        <% savedListings.slice(0, 3).forEach(listing => { %>
+                            <div class="col">
+                                <div class="card h-100 border shadow-sm listing-card position-relative">
+                                    
+                                    <button class="btn btn-link position-absolute top-0 start-0 m-3 p-0 bg-white bg-opacity-75 rounded-circle shadow-sm d-flex align-items-center justify-content-center wishlist-btn" 
+                                            type="button" 
+                                            data-id="<%= listing._id %>" 
+                                            style="z-index: 10; width: 36px; height: 36px;">
+                                        <i class="fas fa-heart text-danger" style="font-size: 1.1rem;"></i>
+                                    </button>
+
+                                    <a href="/listings/<%= listing._id %>" class="text-decoration-none card-link text-dark h-100 d-flex flex-column">
+                                        <div class="card-img-top-container">
+                                            <img src="<%= (listing.images && listing.images.length > 0) ? listing.images[0] : '/images/default.jpeg' %>" 
+                                                 class="card-img-top" 
+                                                 alt="<%= listing.title %>"
+                                                 onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+                                        </div>
+                                        <div class="card-body p-3">
+                                            <h5 class="card-title fw-bold text-dark text-truncate mb-1"><%= listing.title %></h5>
+                                            <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i><%= listing.location %>, <%= listing.city %></p>
+                                            <span class="fw-bold text-success">₹<%= listing.price.toLocaleString("en-IN") %> /mo</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+</div>

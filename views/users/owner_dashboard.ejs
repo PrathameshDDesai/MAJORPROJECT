@@ -1,0 +1,241 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5 animate__animated animate__fadeIn">
+    <!-- Header Summary Card -->
+    <div class="card border-0 shadow-sm bg-gradient-success text-white rounded-4 p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <div class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                    <i class="fas fa-house-user fa-2x"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h2 class="mb-0 fw-bold">Owner Dashboard: <%= currUser.fullname %></h2>
+                <p class="mb-0 text-white-50">Property Owner Portal • Manage your published rooms and coordinate tenant visitations</p>
+            </div>
+            <% if(currUser.isVerifiedOwner) { %>
+                <div class="col-md-auto mt-3 mt-md-0">
+                    <span class="badge bg-white text-success rounded-pill px-3 py-2 fs-6 fw-bold">
+                        <i class="fas fa-check-circle me-1"></i>Verified Owner
+                    </span>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Analytics Dashboard Cards -->
+    <div class="row g-4 mb-5">
+        <!-- Card 1: Total listings -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small uppercase fw-bold">Total Listings</span>
+                    <div class="icon-circle bg-primary bg-opacity-10 text-primary" style="width: 40px; height: 40px;">
+                        <i class="fas fa-list-ul"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold mb-1 text-dark"><%= totalListings %></h2>
+                <p class="text-muted small mb-0">Rooms published on UniRooms</p>
+            </div>
+        </div>
+
+        <!-- Card 2: Total views -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small uppercase fw-bold">Total Views</span>
+                    <div class="icon-circle bg-info bg-opacity-10 text-info" style="width: 40px; height: 40px;">
+                        <i class="far fa-eye"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold mb-1 text-dark"><%= totalViews %></h2>
+                <p class="text-muted small mb-0">Total listing detail page hits</p>
+            </div>
+        </div>
+
+        <!-- Card 3: Average Rating -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small uppercase fw-bold">Average Rating</span>
+                    <div class="icon-circle bg-warning bg-opacity-10 text-warning" style="width: 40px; height: 40px;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold mb-1 text-dark">
+                    <%= avgRating %> <span class="fs-6 text-muted">/ 5</span>
+                </h2>
+                <p class="text-muted small mb-0">Across all reviewed properties</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Pill Tabs -->
+    <ul class="nav nav-pills nav-fill mb-4 border p-2 rounded-pill bg-white shadow-sm" id="ownerDashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-bold" id="owner-bookings-tab" data-bs-toggle="pill" data-bs-target="#owner-bookings" type="button" role="tab" aria-controls="owner-bookings" aria-selected="true">
+                <i class="fas fa-calendar-check me-2"></i>Visit Requests
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-bold" id="owner-listings-tab" data-bs-toggle="pill" data-bs-target="#owner-listings" type="button" role="tab" aria-controls="owner-listings" aria-selected="false">
+                <i class="fas fa-home me-2"></i>My Listed Properties
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link rounded-pill fw-bold text-dark" href="/chat">
+                <i class="far fa-comments me-2 text-primary"></i>Inbox Chat
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content Area -->
+    <div class="tab-content" id="ownerDashboardTabContent">
+        
+        <!-- Tab 1: Bookings / Visit Requests -->
+        <div class="tab-pane fade show active" id="owner-bookings" role="tabpanel" aria-labelledby="owner-bookings-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h4 class="fw-bold mb-4"><i class="fas fa-tasks me-2 text-success"></i>Incoming Visit Requests</h4>
+
+                <% if (bookings.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="far fa-calendar-alt fa-3x text-muted mb-3"></i>
+                        <h5 class="fw-semibold">No visit requests received yet</h5>
+                        <p class="text-muted mb-0">Interested students will schedule a visitation on your room pages.</p>
+                    </div>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover border-light">
+                            <thead class="table-light text-muted uppercase small fw-bold">
+                                <tr>
+                                    <th>Listing Property</th>
+                                    <th>Requested By</th>
+                                    <th>Visit Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% bookings.forEach(booking => { %>
+                                    <tr>
+                                        <td>
+                                            <% if (booking.listing) { %>
+                                                <a href="/listings/<%= booking.listing._id %>" class="fw-bold text-dark text-decoration-none">
+                                                    <%= booking.listing.title %>
+                                                </a>
+                                                <small class="text-muted d-block"><%= booking.listing.location %>, <%= booking.listing.city %></small>
+                                            <% } else { %>
+                                                <span class="text-muted italic">Deleted listing</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <span class="fw-medium"><%= booking.tenant ? booking.tenant.fullname : 'Anonymous' %></span>
+                                            <small class="text-muted d-block">@<%= booking.tenant ? booking.tenant.username : 'deleted' %></small>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-primary">
+                                                <%= new Date(booking.visitDate).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill px-3 py-1.5 
+                                                <%= booking.status === 'Accepted' ? 'bg-success text-white' : 
+                                                    booking.status === 'Rejected' ? 'bg-danger text-white' : 
+                                                    booking.status === 'Completed' ? 'bg-secondary text-white' : 
+                                                    'bg-warning text-dark' %>">
+                                                <%= booking.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% if (booking.status === 'Pending') { %>
+                                                <div class="d-flex gap-1">
+                                                    <form action="/bookings/<%= booking._id %>/status" method="POST" class="d-inline">
+                                                        <input type="hidden" name="status" value="Accepted">
+                                                        <button type="submit" class="btn btn-success btn-sm rounded-pill px-2.5">
+                                                            Accept
+                                                        </button>
+                                                    </form>
+                                                    <form action="/bookings/<%= booking._id %>/status" method="POST" class="d-inline">
+                                                        <input type="hidden" name="status" value="Rejected">
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2.5">
+                                                            Reject
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            <% } else { %>
+                                                <span class="text-muted small">Processed</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Tab 2: Owner Listings -->
+        <div class="tab-pane fade" id="owner-listings" role="tabpanel" aria-labelledby="owner-listings-tab">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-home me-2 text-success"></i>My Properties</h4>
+                    <a href="/listings/new" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus me-1"></i> Add Room
+                    </a>
+                </div>
+
+                <% if (listings.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-house-damage fa-3x text-muted mb-3"></i>
+                        <h5 class="fw-semibold">No property rooms published</h5>
+                        <p class="text-muted mb-4">Get started by creating your first university room listing.</p>
+                        <a href="/listings/new" class="btn btn-success rounded-pill px-4">Add Listing</a>
+                    </div>
+                <% } else { %>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        <% listings.forEach(listing => { %>
+                            <div class="col">
+                                <div class="card h-100 border shadow-sm listing-card">
+                                    <div class="card-img-top-container">
+                                        <img src="<%= (listing.images && listing.images.length > 0) ? listing.images[0] : '/images/default.jpeg' %>" 
+                                             class="card-img-top" 
+                                             alt="<%= listing.title %>"
+                                             onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+                                    </div>
+                                    <div class="card-body p-3 d-flex flex-column">
+                                        <h5 class="card-title fw-bold text-dark text-truncate mb-1"><%= listing.title %></h5>
+                                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i><%= listing.location %>, <%= listing.city %></p>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                             <span class="fw-bold text-success">₹<%= listing.price.toLocaleString("en-IN") %> /mo</span>
+                                             <div class="d-flex gap-1 align-items-center">
+                                                 <% if (listing.isHidden) { %>
+                                                     <span class="badge badge-hidden" data-i18n="listingHiddenBadge"><i class="fas fa-eye-slash me-1"></i>Hidden</span>
+                                                 <% } else { %>
+                                                     <span class="badge badge-visible" data-i18n="listingVisibleBadge"><i class="fas fa-eye me-1"></i>Visible</span>
+                                                 <% } %>
+                                                 <span class="badge bg-light text-dark border small"><i class="far fa-eye me-1"></i><%= listing.viewsCount || 0 %> Views</span>
+                                             </div>
+                                         </div>
+
+                                         <div class="mt-auto d-flex gap-1 flex-wrap">
+                                             <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" data-i18n="viewDetails">View</a>
+                                             <form method="POST" action="/listings/<%= listing._id %>/toggle-visibility" class="d-inline flex-fill">
+                                                 <button type="submit" class="btn <%= listing.isHidden ? 'btn-success' : 'btn-outline-secondary' %> btn-sm w-100 rounded-pill">
+                                                     <i class="fas <%= listing.isHidden ? 'fa-eye' : 'fa-eye-slash' %>"></i>
+                                                 </button>
+                                             </form>
+                                             <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning btn-sm flex-fill rounded-pill" data-i18n="edit">Edit</a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+</div>

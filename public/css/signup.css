@@ -1,0 +1,302 @@
+/* ==================== SIGNUP PAGE STYLES - Premium Version ==================== */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+    --secondary-gradient: linear-gradient(135deg, #18181f 0%, #0a0a0c 100%);
+    --glass-bg: rgba(18, 18, 22, 0.95);
+    --glass-border: rgba(212, 175, 55, 0.35);
+}
+
+body {
+    background: #070709;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.15) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.1) 0, transparent 50%);
+    background-attachment: fixed;
+    color: #f4f4f6;
+}
+
+.signup-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.signup-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 600px;
+    width: 100%;
+    overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== HEADER ==================== */
+
+.signup-header {
+    background: var(--primary-gradient);
+    color: white;
+    text-align: center;
+    padding: 3.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.signup-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+.signup-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    position: relative;
+    z-index: 1;
+}
+
+.signup-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==================== FORM ==================== */
+
+.signup-form {
+    padding: 3rem 2.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-group label i {
+    color: #4a5568;
+    margin-right: 0.5rem;
+    width: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f7fafc;
+    color: #2d3748;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4a5568;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(74, 85, 104, 0.15);
+    transform: translateY(-1px);
+}
+
+/* ==================== ROLE SELECTOR ==================== */
+
+.role-selector {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.role-option {
+    flex: 1;
+    position: relative;
+    border: 2px solid #edf2f7;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f7fafc;
+}
+
+.role-option label {
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    color: #4a5568 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.role-option label i {
+    font-size: 2rem;
+    color: #a0aec0;
+    margin: 0 !important;
+    width: auto !important;
+}
+
+.role-option:hover {
+    border-color: #cbd5e0;
+    background: white;
+}
+
+.role-option.active {
+    border-color: #2c3e50;
+    background: white;
+    box-shadow: 0 10px 15px -3px rgba(44, 62, 80, 0.1);
+}
+
+.role-option.active label i {
+    color: #2c3e50;
+}
+
+.role-option.active label span {
+    color: #2c3e50;
+}
+
+/* ==================== SUBMIT BUTTON ==================== */
+
+.btn-submit {
+    width: 100%;
+    padding: 1.125rem;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(44, 62, 80, 0.25);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(102, 126, 234, 0.3);
+    filter: brightness(1.1);
+}
+
+/* ==================== EXTRA CLASSES ==================== */
+
+.d-none {
+    display: none;
+}
+
+#owner-details {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #edf2f7;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== FOOTER ==================== */
+
+.form-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.link-primary {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+.link-primary:hover {
+    text-decoration: underline;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 576px) {
+    .signup-card {
+        border-radius: 0;
+    }
+
+    .signup-form {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .role-selector {
+        flex-direction: column;
+    }
+}

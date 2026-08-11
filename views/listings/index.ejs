@@ -2,8 +2,8 @@
 
     <div class="row mb-5">
         <div class="col-12 text-center">
-            <h1 class="display-4 fw-bold text-dark mb-2">Available Rooms</h1>
-            <p class="lead text-muted">Find your perfect university accommodation with ease.</p>
+            <h1 class="display-4 fw-bold text-dark mb-2" data-i18n="availableRoomsTitle">Available Rooms</h1>
+            <p class="lead text-muted" data-i18n="availableRoomsSubtitle">Find your perfect university accommodation with ease.</p>
             <div class="mx-auto" style="width: 80px; height: 4px; background: var(--action); border-radius: 2px;"></div>
         </div>
     </div>
@@ -21,37 +21,85 @@
         <% } else { %>
 
             <div class="row mb-4">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-2 mb-md-0">
                     <div class="input-group">
                         <span class="input-group-text bg-light">
                             <i class="fas fa-search"></i>
                         </span>
                         <input type="text" id="searchInput" class="form-control border-light"
-                            placeholder="Search rooms...">
+                            placeholder="Search rooms..." data-i18n="searchPlaceholder">
                     </div>
                 </div>
-                <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <select id="cityFilter" class="form-select border-light">
+                        <option value="">All Cities</option>
+                        <% const cities=[...new Set(allListings.map(l=> l.city).filter(c => c))];
+                            cities.sort().forEach(city => { %>
+                            <option value="<%= city %>">
+                                <%= city %>
+                            </option>
+                            <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2 mb-md-0">
+                    <select id="genderFilter" class="form-select border-light">
+                        <option value="" data-i18n="allGenders">All Genders</option>
+                        <option value="Boys" data-i18n="boysOnly">Boys</option>
+                        <option value="Girls" data-i18n="girlsOnly">Girls</option>
+                        <option value="Any" data-i18n="anyGender">Any</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-md-end">
                     <span class="badge bg-secondary fs-6">
                         <i class="fas fa-bed me-1"></i>
-                        <%= allListings.length %> Room<%= allListings.length !==1 ? 's' : '' %> Available
+                        <span id="listingCount">
+                            <%= allListings.length %>
+                        </span> Room<%= allListings.length !==1 ? 's' : '' %> Available
                     </span>
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <% allListings.forEach(listing=> { %>
-                    <div class="col">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listingsContainer">
+                <% allListings.forEach((listing, index)=> { %>
+                    <div class="col listing-item" style="animation-delay: calc(<%= index %> * 0.1s);">
                         <a href="/listings/<%= listing._id %>" class="text-decoration-none card-link">
-                            <div class="card h-100 shadow-sm border listing-card">
-                                <div class="card-img-top-container">
-                                    <img src="<%= listing.image || '/images/default-room.jpg' %>" class="card-img-top"
-                                        alt="<%= listing.title %>"
+                            <div class="card h-100 shadow-sm border listing-card" data-city="<%= listing.city || '' %>"
+                                data-gender="<%= listing.gender || 'Any' %>">
+                                <div class="card-img-top-container position-relative">
+                                    <img src="<%= (listing.images && listing.images.length > 0) ? listing.images[0] : '/images/default.jpeg' %>"
+                                        class="card-img-top" alt="<%= listing.title %>" loading="lazy"
                                         onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=350&fit=crop'">
+
+                                    <!-- Wishlist Heart Button -->
+                                    <button class="btn btn-link position-absolute top-0 start-0 m-2 p-0 bg-white bg-opacity-75 rounded-circle shadow-sm d-flex align-items-center justify-content-center wishlist-btn" 
+                                            type="button" 
+                                            data-id="<%= listing._id %>" 
+                                            style="z-index: 10; width: 36px; height: 36px;"
+                                            title="Save Room">
+                                        <i class="<%= (currUser && currUser.savedListings && currUser.savedListings.includes(listing._id.toString())) ? 'fas fa-heart text-danger' : 'far fa-heart text-muted' %>" style="font-size: 1.1rem; transition: transform 0.2s ease;"></i>
+                                    </button>
+
+                                    <!-- Image Count Badge -->
+                                    <% if(listing.images && listing.images.length> 1) { %>
+                                        <div class="position-absolute top-0 end-0 m-2">
+                                            <span class="badge bg-dark bg-opacity-75 shadow-sm">
+                                                <i class="fas fa-images me-1 text-white"></i>
+                                                <%= listing.images.length %>
+                                            </span>
+                                        </div>
+                                    <% } %>
                                 </div>
 
                                 <div class="card-body d-flex flex-column">
                                     <div class="mb-2">
-                                        <small class="text-muted">Room Title</small>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <small class="text-muted">Room Title</small>
+                                            <% if(listing.owner && listing.owner.isVerifiedOwner) { %>
+                                                <span class="badge bg-success rounded-pill py-0.5 px-2 text-white" style="font-size: 0.7rem;" title="Verified Owner">
+                                                    <i class="fas fa-check-circle me-1"></i>Verified
+                                                </span>
+                                            <% } %>
+                                        </div>
                                         <h5 class="card-title fw-bold text-dark text-truncate">
                                             <%= listing.title %>
                                         </h5>
