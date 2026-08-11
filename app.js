@@ -37,7 +37,7 @@ const app = express();
 const dns = require("dns");
 try {
     dns.setServers(["8.8.8.8", "8.8.4.4"]);
-} catch (e) {}
+} catch (e) { }
 
 /* ================= DATABASE CONNECTION ================= */
 const dbUrl = process.env.ATLAS_URL || process.env.MONGO_URL || "mongodb://127.0.0.1:27017/UniRooms";
@@ -45,16 +45,16 @@ const localDbUrl = "mongodb://127.0.0.1:27017/UniRooms";
 
 async function seedAdminAccount() {
     try {
-        const adminUsername = process.env.ADMIN_USERNAME || "adminhost";
-        const adminPassword = process.env.ADMIN_PASSWORD || "AdminHostPassword123";
-        const adminEmail = process.env.ADMIN_EMAIL || "admin@unirooms.com";
+        const adminUsername = process.env.ADMIN_USERNAME || "Pratham@Suraj";
+        const adminPassword = process.env.ADMIN_PASSWORD || "Pratham@Suraj123";
+        const adminEmail = process.env.ADMIN_EMAIL || "[EMAIL_ADDRESS]";
 
         let adminUser = await User.findOne({ username: adminUsername });
         if (!adminUser) {
             adminUser = new User({
                 username: adminUsername,
                 email: adminEmail,
-                fullname: "UniRooms Admin Host",
+                fullname: "Pratham@Suraj",
                 role: "Admin",
                 isAdmin: true,
                 isVerifiedOwner: true,
@@ -176,7 +176,7 @@ app.use(async (req, res, next) => {
     res.locals.error = req.flash("error");     // Error notifications
     res.locals.currentPath = req.path;         // Useful for highlighting active navbar links
     res.locals.currUser = req.user;
-    
+
     if (req.user) {
         if (req.user.role === "Owner") {
             const Verification = require("./models/verification");
@@ -236,7 +236,7 @@ io.on("connection", (socket) => {
         activeSockets.set(userId, socket.id);
         io.emit("userStatus", { userId, status: "online" });
     });
-    
+
     // Typing indicator forwarding
     socket.on("typing", (data) => {
         const { recipientId, isTyping } = data;
@@ -253,7 +253,7 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", async (data) => {
         const { recipientId, text } = data;
         if (!socket.userId || !recipientId || !text) return;
-        
+
         try {
             const Message = require("./models/message");
             const newMsg = new Message({
@@ -262,7 +262,7 @@ io.on("connection", (socket) => {
                 text
             });
             await newMsg.save();
-            
+
             const recipientSocketId = activeSockets.get(recipientId);
             const msgPayload = {
                 _id: newMsg._id,
@@ -271,17 +271,17 @@ io.on("connection", (socket) => {
                 text,
                 createdAt: newMsg.createdAt
             };
-            
+
             if (recipientSocketId) {
                 io.to(recipientSocketId).emit("receiveMessage", msgPayload);
             }
-            
+
             socket.emit("messageSent", msgPayload);
         } catch (e) {
             console.error("Socket save message error:", e);
         }
     });
-    
+
     // Disconnect
     socket.on("disconnect", () => {
         if (socket.userId) {
